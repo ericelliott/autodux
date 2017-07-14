@@ -48,9 +48,13 @@ Lots of Redux beginners separate all these things into separate files, meaning y
 
 What if you could write some simple, declarative code that would automatically create your:
 
-* action type constants
-* reducer switching logic
-* state slice selectors
+* Action type constants
+* Reducer switching logic
+* State slice selectors
+* Action object shape - automatically inserting the correct action type
+* Entire action creators if no payload is required
+
+Turns out, when you add this simple logic on top of Redux, you can do a lot more with a lot less code.
 
 ```js
 import autodux from 'autodux';

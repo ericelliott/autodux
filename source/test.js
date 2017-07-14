@@ -1,7 +1,6 @@
 const test = require('tape');
 const autodux = require('./index');
 
-const empty = () => {};
 const id = x => x;
 
 const createDux = () => autodux({
@@ -9,11 +8,9 @@ const createDux = () => autodux({
   initial: 0,
   actions: {
     increment: {
-      create: empty,
       reducer: state => state + 1
     },
     decrement: {
-      create: empty,
       reducer: state => state - 1
     },
     multiply: {
@@ -147,7 +144,7 @@ test('autodux().selectors', assert => {
 });
 
 test('autodux() action creators', assert => {
-  const msg = 'should default missing action creators to empty';
+  const msg = 'should default missing action creators to empty payload';
 
   const { actions } = autodux({
     slice: 'emptyCreator',

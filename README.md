@@ -121,8 +121,12 @@ Let's explore that object a bit:
 ```js
 const {
   selectors: { getValue },
-  increment,
-  decrement
+  actions: {
+    increment,
+    decrement
+  },
+  reducer,
+  initial
 } = counter;
 
 const actions = [
@@ -132,8 +136,8 @@ const actions = [
   decrement()
 ];
 
-actions.reduce(reducer, initial); // 2
+const state = actions.reduce(reducer, initial);
 
+console.log(getValue({ counter: state })); // 2
 console.log(increment.type); // 'counter/increment'
-console.log(getValue({counter: 3})); // 3
 ```

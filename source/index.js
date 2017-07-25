@@ -9,7 +9,9 @@ const autodux = ({
   slice = ''
 } = {}) => {
   const reducer = (state = initial, {type, payload} = {}) => {
-    const [ namespace, subType ] = type.split('/');
+    const [ namespace, subType ] = type ?
+    type.split('/') :
+    'unknown/unknown'.split('/');
 
     return (namespace === slice && actions[subType]) ?
       actions[subType].reducer(state, payload) :

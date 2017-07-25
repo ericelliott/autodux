@@ -164,3 +164,19 @@ test('autodux() action creators', assert => {
   assert.same(actual, expected, msg);
   assert.end();
 });
+
+test('Calling the reducer with no arguments', assert => {
+  const msg = 'Should return valid default state';
+  const initial = { a: 'a' };
+  const { reducer } = autodux({
+    initial,
+    actions: {
+      reducer: x => x
+    }
+  });
+  const actual = reducer();
+  const expected = initial;
+
+  assert.same(actual, expected, msg);
+  assert.end();
+})

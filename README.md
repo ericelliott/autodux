@@ -145,3 +145,85 @@ const state = actions.reduce(reducer, initial);
 console.log(getValue({ counter: state })); // 2
 console.log(increment.type); // 'counter/increment'
 ```
+
+
+## API Differences
+
+Reducers and selectors have simplified APIs.
+
+### Reducers
+
+Switching over different action types is automatic, so we don't need an action object that isolates the action type and payload. Instead, we pass the action payload directly, e.g:
+
+
+With Redux:
+
+```js
+const INCREMENT = 'INCREMENT';
+const DECREMENT = 'DECREMENT';
+const MULTIPLY = 'MULTIPLY';
+
+
+const counter = (state = 0, action = {}) {
+  switch (action.type){
+    case INCREMENT: return state + 1;
+    case DECREMENT: return state - 1;
+    case MULTIPLY : return state * action.payload
+    default: return state;
+  }
+};
+```
+
+With Autodux, pass the reducer cases one at a time, and they'll be switched over automatically:
+
+```js
+const counter = autodux({
+  slice: 'counter',
+  //... stuff here
+  actions: {
+    increment: {
+      reducer: state => state + 1
+    },
+    decrement: {
+      reducer: state => state - 1
+    },
+    multiply: {
+      create: id,
+      reducer: (state, payload) => state * payload
+    }
+  }
+  // ... other stuff
+});
+```
+
+Autodux creates the action types for you automatically, and eliminates the need to write switching logic or worry about (or forget) the default case. Reducers don't deal directly with the action object. Instead, they're passed the payload directly.
+
+### Selectors
+
+Selectors are designed to take the application's complete root state object. The slice you care about is automatically selected for you, so you can write your selectors as if you're only dealing with the local reducer.
+
+This has some implications with unit tests. The following selector will just return the local reducer state:
+
+```js
+const counter = autodux({
+  // stuff here
+  selectors: {
+    getValue: state => state
+  },
+  //other stuff
+```
+
+In your unit tests, you'll need to pass the key for the state slice to mock the global store state:
+
+```js
+test('counter.getValue', assert => {
+  const msg = 'should return the current count';
+  const { getValue } = counter.selectors;
+
+  const actual = getValue({ counter: 3 });
+  const expected = 3;
+
+  assert.same(actual, expected, msg);
+  assert.end();
+});
+```

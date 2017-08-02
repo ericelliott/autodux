@@ -2,13 +2,9 @@
 
 Automate the Redux boilerplate.
 
-## Status: Developer preview
+## Status: Early Release
 
-This library is still in the idea phase. Please check it out and file any issues you encounter.
-
-### Known Issues
-
-* Currently requires ES6 features. Should work great in any modern evergreen browser, but has no support for old browsers (e.g., IE).
+This library is ready for production testing. Please check it out and file any issues you encounter.
 
 ## Install
 

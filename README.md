@@ -113,7 +113,7 @@ What you get from that is an object that looks like this:
     getValue: [Function: wrapper]
   },
   reducer: [Function: reducer],
-  slice: 'counter
+  slice: 'counter'
 }
 ```
 

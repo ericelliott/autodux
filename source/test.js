@@ -189,4 +189,4 @@ test('Calling the reducer with no arguments', assert => {
 
   assert.same(actual, expected, msg);
   assert.end();
-})
+});

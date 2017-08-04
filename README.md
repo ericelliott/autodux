@@ -129,7 +129,7 @@ const {
   reducer,
   initial,
   slice
-} = counter;
+} = counter();
 
 const actions = [
   increment(),

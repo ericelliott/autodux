@@ -112,7 +112,8 @@ What you get from that is an object that looks like this:
   selectors: {
     getValue: [Function: wrapper]
   },
-  reducer: [Function: reducer]
+  reducer: [Function: reducer],
+  slice: 'counter
 }
 ```
 
@@ -126,7 +127,8 @@ const {
     decrement
   },
   reducer,
-  initial
+  initial,
+  slice
 } = counter;
 
 const actions = [

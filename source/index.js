@@ -44,7 +44,7 @@ const autodux = ({
   );
 
   return {
-    initial, actions: mappedActions, selectors: slicedSelectors, reducer
+    initial, actions: mappedActions, selectors: slicedSelectors, reducer, slice
   };
 };
 

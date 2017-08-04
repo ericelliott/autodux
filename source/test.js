@@ -23,6 +23,16 @@ const createDux = () => autodux({
   }
 });
 
+test('autodux().slice', assert => {
+  const msg = 'should have the correct string value';
+
+  const actual = createDux().slice;
+  const expected = 'counter';
+
+  assert.same(actual, expected, msg);
+  assert.end();
+});
+
 test('autodux().actions', assert => {
   const msg = 'should contain action creators';
 

@@ -271,7 +271,7 @@ const counter = autodux({
   selectors: {
     getValue: id // state => state
   },
-  //other stuff
+  // other stuff
 ```
 
 In your unit tests, you'll need to pass the key for the state slice to mock the global store state:
@@ -283,6 +283,35 @@ test('counter.getValue', assert => {
 
   const actual = getValue({ counter: 3 });
   const expected = 3;
+
+  assert.same(actual, expected, msg);
+  assert.end();
+});
+```
+
+Although you should avoid selecting state from outside the slice you care about, the root state object is passed as a convenience second argument to selectors:
+
+```
+import autodux from 'autodux';
+
+const counter = autodux({
+  // stuff here
+  selectors: {
+    // other selectors
+    rootState: (_, root) => root
+  },
+  // other stuff
+```
+
+In your unit tests, this allows you to retrieve the entire root state:
+
+```js
+test('counter.rootState', assert => {
+  const msg = 'should return the root state';
+  const { rootState } = counter.selectors;
+
+  const actual = rootState({ counter: 3, otherSlice: 'data' });
+  const expected = { counter: 3, otherSlice: 'data' };
 
   assert.same(actual, expected, msg);
   assert.end();

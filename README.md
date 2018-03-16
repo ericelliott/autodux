@@ -4,7 +4,7 @@ Automate the Redux boilerplate.
 
 ## Status: Early Release
 
-This library is ready for production testing. Please check it out and file any issues you encounter.
+This library is being production tested in several large apps.
 
 ## Install
 

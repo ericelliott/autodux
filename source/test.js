@@ -19,7 +19,8 @@ const createDux = () => autodux({
     }
   },
   selectors: {
-    getValue: id
+    getValue: id,
+    getStore: (_, store) => store
   }
 });
 
@@ -148,6 +149,17 @@ test('autodux().selectors', assert => {
 
   const actual = getValue({ counter: 3 });
   const expected = 3;
+
+  assert.same(actual, expected, msg);
+  assert.end();
+});
+
+test('autodux().selectors', assert => {
+  const msg = 'should pass entire store as a second parameter to selectors';
+  const { getStore } = createDux().selectors;
+
+  const actual = getStore({ counter: 3, foo: 'bar' });
+  const expected = { counter: 3, foo: 'bar' };
 
   assert.same(actual, expected, msg);
   assert.end();

@@ -66,5 +66,3 @@ module.exports.assign = key => (state, payload) =>
     [key]: payload
   })
 ;
-
-

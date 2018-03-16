@@ -1,7 +1,7 @@
 const test = require('tape');
-const autodux = require('./index');
-
-const id = x => x;
+const autodux = require('./');
+const id = autodux.id;
+const assign = autodux.assign;
 
 const createDux = () => autodux({
   slice: 'counter',
@@ -154,8 +154,9 @@ test('autodux().selectors', assert => {
 });
 
 test('autodux() action creators', assert => {
-  const msg = 'should default missing action creators to empty payload';
+  const msg = 'should default missing action creators to identity';
 
+  const value = 'UserName';
   const { actions } = autodux({
     slice: 'emptyCreator',
     actions: {
@@ -165,10 +166,35 @@ test('autodux() action creators', assert => {
     }
   });
 
-  const actual = actions.nothing();
+  const actual = actions.nothing(value);
   const expected = {
     type: 'emptyCreator/nothing',
-    payload: undefined
+    payload: value
+  };
+
+  assert.same(actual, expected, msg);
+  assert.end();
+});
+
+test('autodux() action creators', assert => {
+  const msg =
+    'should default missing reducer to spread payload into state';
+
+  const { actions, reducer } = autodux({
+    slice: 'emptyCreator',
+    initial: {c: 'c'},
+    actions: {
+      nothing: {
+        create: () => ({a: 'a', b: 'b'})
+      }
+    }
+  });
+
+  const actual = reducer(undefined, actions.nothing());
+  const expected = {
+    a: 'a',
+    b: 'b',
+    c: 'c'
   };
 
   assert.same(actual, expected, msg);
@@ -189,4 +215,94 @@ test('Calling the reducer with no arguments', assert => {
 
   assert.same(actual, expected, msg);
   assert.end();
-})
+});
+
+test('Passing functions as action values', assert => {
+  const msg = 'should use function as reducer';
+
+  const {
+    reducer,
+    actions: {
+      increment,
+      decrement,
+      multiply
+    },
+    selectors: {
+      getValue
+    }
+  } = autodux({
+    // the slice of state your reducer controls
+    slice: 'counter',
+
+    // The initial value of your reducer state
+    initial: 0,
+
+    // No need to implement switching logic -- it's
+    // done for you.
+    actions: {
+      increment: state => state + 1,
+      decrement: state => state - 1,
+      multiply: {
+        create: ({ by }) => by,
+        reducer: (state, payload) => state * payload
+      }
+    },
+
+    // No need to select the state slice -- it's done for you.
+    selectors: {
+      getValue: id
+    }
+  });
+
+  const state = [
+    increment(),
+    increment(),
+    increment(),
+    decrement(),
+    multiply({ by: 2 })
+  ].reduce(reducer, undefined);
+  const actual = getValue({ counter: state });
+
+  const expected = 4;
+
+  assert.same(actual, expected, msg);
+  assert.end();
+});
+
+test('autodux/assign(key)', assert => {
+  const msg =
+    'should set the key in the state to the payload value';
+
+  const {
+    actions: {
+      setUserName,
+      setAvatar
+    },
+    reducer
+  } = autodux({
+    slice: 'user',
+    initial: {
+      userName: 'Anonymous',
+      avatar: 'anonymous.png'
+    },
+    actions: {
+      setUserName: assign('userName'),
+      setAvatar: assign('avatar')
+    }
+  });
+  const userName = 'Foo';
+  const avatar = 'foo.png';
+
+  const actual = [
+    setUserName(userName),
+    setAvatar(avatar)
+  ].reduce(reducer, undefined);
+
+  const expected = {
+    userName,
+    avatar
+  };
+
+  assert.same(actual, expected, msg);
+  assert.end();
+});

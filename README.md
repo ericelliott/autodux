@@ -150,7 +150,7 @@ const setUserName = userName => ({
 })
 ```
 
-With autoDux, if your action creator maps directly from input to payload, you can omit it. autoDux will do it for you.
+With autodux, if your action creator maps directly from input to payload, you can omit it. autodux will do it for you.
 
 By omitting the action creator, you can shorten this:
 
@@ -173,7 +173,7 @@ actions: {
 
 #### No need to set the type
 
-You don't need to worry about setting the type in autoDux action creators. That's handled for you automatically. In other words, all an action creator has to do is return the payload.
+You don't need to worry about setting the type in autodux action creators. That's handled for you automatically. In other words, all an action creator has to do is return the payload.
 
 With Redux alone you might write:
 
@@ -184,7 +184,7 @@ const setUserName = userName => ({
 })
 ```
 
-With autoDux, that becomes:
+With autodux, that becomes:
 
 ```js
 userName => userName

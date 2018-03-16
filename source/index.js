@@ -1,6 +1,6 @@
 const curry = require('lodash.curry');
 
-const sliceSelector = curry((slice, fn, state) => fn(state[slice]));
+const sliceSelector = curry((slice, fn, state) => fn(state[slice], state));
 
 const autodux = ({
   initial = '',
@@ -66,3 +66,5 @@ module.exports.assign = key => (state, payload) =>
     [key]: payload
   })
 ;
+
+

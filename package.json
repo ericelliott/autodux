@@ -1,11 +1,10 @@
 {
   "name": "autodux",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Automate the Redux boilerplate.",
-  "browser": "dist/index.browser.js",
+  "browser": "dist/index.js",
   "main": "dist/index.js",
   "module": "dist/index-esm.js",
-  "browser": "dist/index.js",
   "scripts": {
     "lint": "eslint src && echo 'lint finished.'",
     "test": "node src/test.js",

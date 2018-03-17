@@ -263,7 +263,7 @@ Selectors are designed to take the application's complete root state object, but
 
 This has some implications with unit tests. The following selector will just return the local reducer state:
 
-```
+```js
 import { autodux, id } from 'autodux';
 
 const counter = autodux({
@@ -291,7 +291,7 @@ test('counter.getValue', assert => {
 
 Although you should avoid selecting state from outside the slice you care about, the root state object is passed as a convenience second argument to selectors:
 
-```
+```js
 import autodux from 'autodux';
 
 const counter = autodux({

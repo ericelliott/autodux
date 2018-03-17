@@ -155,6 +155,30 @@ test('autodux().selectors', assert => {
 });
 
 test('autodux().selectors', assert => {
+  const msg = 'should exose a selector for each key in initial state';
+  const initial = {
+    key1: 'value 1',
+    key2: 'value 2'
+  };
+
+  const { selectors, selectors: { getKey1, getKey2 } } = autodux({
+    slice: 'slice',
+    initial
+  });
+
+  console.log(selectors);
+
+  const actual = {
+    key1: getKey1(initial),
+    key2: getKey2(initial)
+  };
+  const expected = initial;
+
+  assert.same(actual, expected, msg);
+  assert.end();
+});
+
+test('autodux().selectors', assert => {
   const msg = 'should pass entire store as a second parameter to selectors';
   const { getStore } = createDux().selectors;
 

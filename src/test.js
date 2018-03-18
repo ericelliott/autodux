@@ -167,17 +167,45 @@ test('autodux().selectors', assert => {
     slice: initial
   };
 
-  const { selectors, selectors: { getKey1, getKey2 } } = autodux({
+  const { selectors: { getKey1, getKey2 } } = autodux({
     slice: 'slice',
     initial
   });
-
-  selectors;
 
   const actual = {
     key1: getKey1(store),
     key2: getKey2(store)
   };
+  const expected = initial;
+
+  assert.same(actual, expected, msg);
+  assert.end();
+});
+
+test('autodux().selectors slice selector', assert => {
+  const msg = 'should expose a selector for the entire reducer state';
+
+  const initial = {
+    userName: 'Anonymous',
+    avatar: 'anonymous.png'
+  };
+  const store = {
+    user: initial
+  };
+
+  const {
+    selectors: {
+      getUser
+    }
+  } = autodux({
+    slice: 'user',
+    initial: {
+      userName: 'Anonymous',
+      avatar: 'anon.png'
+    }
+  });
+
+  const actual = getUser(store);
   const expected = initial;
 
   assert.same(actual, expected, msg);
@@ -259,8 +287,8 @@ test('Calling the reducer with no arguments', assert => {
   assert.end();
 });
 
-test('Passing functions as action values', assert => {
-  const msg = 'should use function as reducer';
+test('Functions as action values', assert => {
+  const msg = 'should use function as a reducer';
 
   const {
     reducer,

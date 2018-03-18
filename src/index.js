@@ -1,6 +1,7 @@
 const get = require('lodash/fp/get');
 const capitalize = require('lodash/upperFirst');
 
+const id = x => x;
 const selectIf = predicate => x => predicate(x) && x;
 const isFunction = f => (typeof f === 'function');
 const selectFunction = selectIf(isFunction);
@@ -17,12 +18,14 @@ const createInitSelectors = (slice, initial) => Object.keys(initial).reduce(
 );
 
 const createSliceSelectors = (slice, selectors) => (
-  Object.keys(selectors).reduce(
+  Object.assign(Object.keys(selectors).reduce(
     (obj, selector) => slice ?
       Object.assign(obj, {[selector]: sliceSelector(slice, selectors[selector]) }) :
       Object.assign(obj, {[selector]: selectors[selector] }),
     {}
-  )
+  ), {
+    [toGetter(slice)]: sliceSelector(slice, id)
+  })
 );
 // /selector creation
 
@@ -134,7 +137,7 @@ const autodux = ({
 };
 
 module.exports = autodux;
-module.exports.id = x => x;
+module.exports.id = id;
 
 module.exports.assign = key => (state, payload) =>
   Object.assign({}, state, {

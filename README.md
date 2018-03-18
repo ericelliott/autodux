@@ -259,6 +259,8 @@ Because the switching is handled automatically, your reducers don't need to worr
 
 ### Selectors
 
+> Note: Selectors are optional. By default, every key in your initial state will have its own selector, prepended with `get` and camelCased. For example, if you have a key called `userName`, a `getUserName` selector will be created automatically.
+
 Selectors are designed to take the application's complete root state object, but the slice you care about is automatically selected for you, so you can write your selectors as if you're only dealing with the local reducer.
 
 This has some implications with unit tests. The following selector will just return the local reducer state:

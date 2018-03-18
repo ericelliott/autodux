@@ -8,6 +8,7 @@
   "scripts": {
     "lint": "eslint src && echo 'lint finished.'",
     "test": "node src/test.js | tap-colorize && npm run -s lint",
+    "debug": "echo 'open debugger: chrome://inspect' && node --inspect-brk src/test.js",
     "watch": "watch 'clear && npm run -s test' src",
     "prepare": "npm run test -s && prepublish"
   },

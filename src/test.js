@@ -38,7 +38,7 @@ test('autodux().actions', assert => {
   const msg = 'should contain action creators';
 
   const actual = Object.keys(createDux().actions);
-  const expected = ['increment', 'decrement', 'multiply'];
+  const expected = ['setCounter', 'increment', 'decrement', 'multiply'];
 
   assert.same(actual, expected, msg);
   assert.end();
@@ -70,6 +70,7 @@ test('autodux().actions', assert => {
 
   const {
     actions: {
+      setCounter,
       increment,
       decrement,
       multiply
@@ -77,12 +78,14 @@ test('autodux().actions', assert => {
   } = createDux();
 
   const actual = [
+    setCounter.type,
     increment.type,
     decrement.type,
     multiply.type
   ];
 
   const expected = [
+    'counter/setCounter',
     'counter/increment',
     'counter/decrement',
     'counter/multiply'
@@ -155,10 +158,13 @@ test('autodux().selectors', assert => {
 });
 
 test('autodux().selectors', assert => {
-  const msg = 'should exose a selector for each key in initial state';
+  const msg = 'should expose a selector for each key in initial state';
   const initial = {
     key1: 'value 1',
     key2: 'value 2'
+  };
+  const store = {
+    slice: initial
   };
 
   const { selectors, selectors: { getKey1, getKey2 } } = autodux({
@@ -166,11 +172,11 @@ test('autodux().selectors', assert => {
     initial
   });
 
-  console.log(selectors);
+  selectors;
 
   const actual = {
-    key1: getKey1(initial),
-    key2: getKey2(initial)
+    key1: getKey1(store),
+    key2: getKey2(store)
   };
   const expected = initial;
 
@@ -324,6 +330,68 @@ test('autodux/assign(key)', assert => {
     actions: {
       setUserName: assign('userName'),
       setAvatar: assign('avatar')
+    }
+  });
+  const userName = 'Foo';
+  const avatar = 'foo.png';
+
+  const actual = [
+    setUserName(userName),
+    setAvatar(avatar)
+  ].reduce(reducer, undefined);
+
+  const expected = {
+    userName,
+    avatar
+  };
+
+  assert.same(actual, expected, msg);
+  assert.end();
+});
+
+test('autodux/default actions (without actions key)', assert => {
+  const msg = 'should create `set${slice}` to spread payload into state';
+
+  const {
+    actions: {
+      setUser
+    },
+    reducer
+  } = autodux({
+    slice: 'user',
+    initial: {
+      userName: 'Anonymous',
+      avatar: 'anonymous.png'
+    }
+  });
+  const userName = 'Foo';
+  const avatar = 'foo.png';
+
+  const actual = reducer(undefined, setUser({ userName, avatar }));
+
+  const expected = {
+    userName,
+    avatar
+  };
+
+  assert.same(actual, expected, msg);
+  assert.end();
+});
+
+test('autodux/default actions (without actions key)', assert => {
+  const msg = 'should create assign actions for each key in initial';
+
+  const {
+    actions: {
+      setUserName,
+      setAvatar
+    },
+    reducer
+  } = autodux({
+    slice: 'user',
+    initial: {
+      userName: 'Anonymous',
+      avatar: 'anonymous.png'
     }
   });
   const userName = 'Foo';

@@ -1,6 +1,91 @@
-const curry = require('lodash.curry');
+const get = require('lodash/fp/get');
+const capitalize = require('lodash/upperFirst');
 
-const sliceSelector = curry((slice, fn, state) => fn(state[slice], state));
+const id = x => x;
+const selectIf = predicate => x => predicate(x) && x;
+const isFunction = f => (typeof f === 'function');
+const selectFunction = selectIf(isFunction);
+
+// # Selector creation:
+const toGetter = s => `get${ capitalize(s) }`;
+const sliceSelector = (slice, fn) => state => fn(state[slice], state);
+
+const createInitSelectors = (slice, initial) => Object.keys(initial).reduce(
+  (obj, selector) => slice ?
+    Object.assign(obj, {[toGetter(selector)]: sliceSelector(slice, state => get(selector, state)) }) :
+    Object.assign(obj, {[toGetter(selector)]: state => get(selector, state) }),
+  {}
+);
+
+const createSliceSelectors = (slice, selectors) => (
+  Object.assign(Object.keys(selectors).reduce(
+    (obj, selector) => slice ?
+      Object.assign(obj, {[selector]: sliceSelector(slice, selectors[selector]) }) :
+      Object.assign(obj, {[selector]: selectors[selector] }),
+    {}
+  ), {
+    [toGetter(slice)]: sliceSelector(slice, id)
+  })
+);
+// /selector creation
+
+// # Action creation
+const getActionName = key => `set${ capitalize(key) }`;
+
+const createAction = (
+  slice, action, key,
+  type = `${ slice }/${ action }`
+) => ({
+  create: Object.assign(payload => ({
+    type,
+    payload
+  }), { type }),
+
+  reducer: (state, { payload }) => Object.assign({},
+    state,
+    (key)
+      ? { [key]: payload }
+      : payload
+  )
+});
+
+const getInitialActions = (slice, initial) => (
+  Object.keys(initial).reduce((o, key) => {
+    const action = getActionName(key);
+    return Object.assign(o, {
+      [action]: createAction(slice, action, key)
+    });
+  }, {})
+);
+
+const addDefaultActions = (slice, initial, actions) => {
+  const initialActions = getInitialActions(slice, initial);
+  const action = getActionName(slice);
+
+  return Object.assign({},
+    {
+      [action]: createAction(slice, action)
+    },
+    initialActions,
+    actions
+  );
+};
+
+const createMappedActions = (slice, actions) => Object.keys(actions).reduce(
+  (obj, action) => Object.assign({}, obj, {
+    [action]: Object.assign(
+      (...args) => ({
+        type: `${ slice }/${ action }`,
+        payload: typeof actions[action].create === 'function' ?
+          actions[action].create(...args) :
+          args[0]
+      }),
+      { type: `${ slice }/${ action }` }
+    )
+  }),
+  {}
+);
+// /action creation
 
 const autodux = ({
   initial = '',
@@ -8,20 +93,36 @@ const autodux = ({
   selectors = {},
   slice = ''
 } = {}) => {
+  const allSelectors = Object.assign({},
+    createInitSelectors(slice, initial),
+    createSliceSelectors(slice, selectors)
+  );
+
+  const allActions = createMappedActions(slice,
+    addDefaultActions(slice, initial, actions)
+  );
+
   const reducer = (state = initial, {type, payload} = {}) => {
     const [ namespace, subType ] = type ?
       type.split('/') :
       'unknown/unknown'.split('/');
 
-    const actionReducer = (!actions[subType]) ?
-      undefined :
-      (typeof actions[subType].reducer == 'function') ?
-        actions[subType].reducer :
-        (typeof actions[subType] === 'function') ?
-          actions[subType] :
-          undefined;
+    const defaultActions = addDefaultActions(slice, initial, {});
 
-    return (namespace === slice && actions[subType]) ?
+    // Look for reducer with top-to-bottom precedence.
+    // Fall back to default actions, then undefined.
+    // The actions[subType] key can be a function
+    // or an object, so we only select the value
+    // if it's a function:
+    const actionReducer = [
+      get(`${ subType }.reducer`, actions),
+      actions[subType],
+      get(`${ subType }.reducer`, defaultActions)
+    ].reduceRight((f, v) => selectFunction(v) || f);
+
+    return (namespace === slice
+      && (actions[subType] || defaultActions[subType])
+    ) ?
       (actionReducer) ?
         actionReducer(state, payload) :
         Object.assign({}, state, payload) :
@@ -29,37 +130,14 @@ const autodux = ({
     ;
   };
 
-  const createSelector = sliceSelector(slice);
-
-  const slicedSelectors = Object.keys(selectors).reduce(
-    (obj, selector) => slice ?
-      Object.assign(obj, {[selector]: createSelector(selectors[selector]) }) :
-      Object.assign(obj, {[selector]: selectors[selector] }),
-    {}
-  );
-
-  const mappedActions = Object.keys(actions).reduce(
-    (obj, action) => Object.assign({}, obj, {
-      [action]: Object.assign(
-        (...args) => ({
-          type: `${ slice }/${ action }`,
-          payload: typeof actions[action].create === 'function' ?
-            actions[action].create(...args) :
-            args[0]
-        }),
-        { type: `${ slice }/${ action }` }
-      )
-    }),
-    {}
-  );
-
   return {
-    initial, actions: mappedActions, selectors: slicedSelectors, reducer, slice
+    initial, reducer, slice,
+    selectors: allSelectors, actions: allActions,
   };
 };
 
 module.exports = autodux;
-module.exports.id = x => x;
+module.exports.id = id;
 
 module.exports.assign = key => (state, payload) =>
   Object.assign({}, state, {

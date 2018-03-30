@@ -160,7 +160,7 @@ describe('autodux().selectors', async should => {
   {
     assert({
       given: 'a property and value',
-      should: 'return ia selector that knows its state slice',
+      should: 'return a selector that knows its state slice',
       actual: getValue({ counter: 3 }),
       expected: 3
     });
@@ -350,7 +350,7 @@ describe('autodux() action creators', async should => {
     ].reduce(reducer, undefined);
 
     assert({
-      given: 'a functions as action values',
+      given: 'functions as action values',
       should: 'use function as a reducer',
       actual: getValue({ counter: state }),
       expected: 4
@@ -461,7 +461,7 @@ describe('autodux/default', async should => {
 
     assert({
       given: 'actions (without action keys)',
-      should: 'create assign actions for each key in initial',
+      should: 'create assignment actions for each key in initial',
       actual,
       expected,
     });

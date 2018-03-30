@@ -35,6 +35,7 @@
     "watch": "1.0.2"
   },
   "dependencies": {
-    "lodash.curry": "4.1.1"
+    "lodash.curry": "4.1.1",
+    "riteway": "^2.0.3"
   }
 }

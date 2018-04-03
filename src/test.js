@@ -381,8 +381,10 @@ describe('autodux/assign(key)', async should => {
   const userName = 'Foo';
   const avatar = 'foo.png';
 
+  const setUserNameAction = setUserName(userName);
+
   const actual = [
-    setUserName(userName),
+    setUserNameAction,
     setAvatar(avatar)
   ].reduce(reducer, undefined);
 
@@ -396,6 +398,16 @@ describe('autodux/assign(key)', async should => {
     should: 'set the key in the state to the payload value',
     actual,
     expected,
+  });
+
+  assert({
+    given: 'default actions (without action keys)',
+    should: 'produce the correct action object shape',
+    actual: setUserNameAction,
+    expected: {
+      type: 'user/setUserName',
+      payload: userName
+    }
   });
 });
 

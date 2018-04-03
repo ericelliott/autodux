@@ -399,16 +399,6 @@ describe('autodux/assign(key)', async should => {
     actual,
     expected,
   });
-
-  assert({
-    given: 'default actions (without action keys)',
-    should: 'produce the correct action object shape',
-    actual: setUserNameAction,
-    expected: {
-      type: 'user/setUserName',
-      payload: userName
-    }
-  });
 });
 
 describe('autodux/default', async should => {
@@ -478,4 +468,41 @@ describe('autodux/default', async should => {
       expected,
     });
   }
+});
+
+describe('autodux/assign(key)', async should => {
+  const { assert } = should();
+
+  const {
+    actions: {
+      setUserName,
+      setAvatar
+    },
+    reducer
+  } = autodux({
+    slice: 'user',
+    initial: {
+      userName: 'Anonymous',
+      avatar: 'anonymous.png'
+    },
+    actions: {
+      setAvatar: {
+        create: x => x
+      }
+    }
+  });
+
+  const userName = 'Foo';
+
+  const setUserNameAction = setUserName(userName);
+
+  assert({
+    given: 'default actions (with a mix of action key/no action key)',
+    should: 'produce the correct action object shape',
+    actual: setUserNameAction,
+    expected: {
+      type: 'user/setUserName',
+      payload: userName
+    }
+  });
 });

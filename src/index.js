@@ -36,12 +36,9 @@ const createAction = (
   slice, action, key,
   type = `${ slice }/${ action }`
 ) => ({
-  create: Object.assign(payload => ({
-    type,
-    payload
-  }), { type }),
+  create: Object.assign(payload => payload, { type }),
 
-  reducer: (state, { payload }) => Object.assign({},
+  reducer: (state, payload) => Object.assign({},
     state,
     (key)
       ? { [key]: payload }

@@ -10,7 +10,8 @@
     "test": "node src/test.js | tap-colorize && npm run -s lint",
     "debug": "echo 'open debugger: chrome://inspect' && node --inspect-brk src/test.js",
     "watch": "watch 'clear && npm run -s test' src",
-    "prepare": "npm run test -s && prepublish"
+    "prepare": "npm run test -s && prepublish",
+    "update": "updtr"
   },
   "repository": {
     "type": "git",
@@ -28,11 +29,12 @@
   },
   "homepage": "https://github.com/ericelliott/autodux#readme",
   "devDependencies": {
-    "eslint": "4.2.0",
-    "prepublish": "^1.1.3",
-    "riteway": "^2.0.3",
+    "eslint": "5.2.0",
+    "prepublish": "1.7.0",
+    "riteway": "2.0.4",
     "tap-colorize": "1.2.0",
-    "tape": "4.7.0",
+    "tape": "4.9.1",
+    "updtr": "2.0.0",
     "watch": "1.0.2"
   },
   "dependencies": {

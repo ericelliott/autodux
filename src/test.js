@@ -239,6 +239,33 @@ describe('autodux() action creators', async should => {
   const { assert } = should();
 
   {
+    const {
+      actions: {
+        setUserName
+      }
+    } = autodux({
+      slice: 'user',
+      initial: {
+        userName: 'Anonymous',
+      }
+    });
+    const userName = 'Foo';
+
+    const actual = setUserName(userName);
+    const expected = {
+      type: 'user/setUserName',
+      payload: userName,
+    };
+
+    assert({
+      given: 'no action for supplied initial state',
+      should: 'return an action creator which returns an action with the correct type and payload',
+      actual,
+      expected,
+    });
+  }
+
+  {
 
     const value = 'UserName';
     const { actions } = autodux({
@@ -467,3 +494,4 @@ describe('autodux/default', async should => {
     });
   }
 });
+

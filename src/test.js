@@ -258,8 +258,8 @@ describe('autodux() action creators', async should => {
     };
 
     assert({
-      given: 'default action',
-      should: 'create correct actions',
+      given: 'no action for supplied initial state',
+      should: 'return an action creator which returns an action with the correct type and payload',
       actual,
       expected,
     });

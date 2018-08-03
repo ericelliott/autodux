@@ -1,5 +1,11 @@
-const get = require('lodash/fp/get');
-const capitalize = require('lodash/upperFirst');
+const get = (path, obj, def) => path
+  .split('.')
+  .every(step => ((obj = obj[step]) !== undefined)) ? obj : def;
+
+const capitalize = str => {
+  if (typeof str !== 'string' || !str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
 
 const id = x => x;
 const selectIf = predicate => x => predicate(x) && x;

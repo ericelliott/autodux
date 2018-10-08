@@ -25,9 +25,7 @@ const createDux = () => autodux({
   }
 });
 
-describe('autodux().slice', async should => {
-  const { assert } = should();
-
+describe('autodux().slice', async assert => {
   assert({
     given: 'autodux is called with args',
     should: 'have the correct string value',
@@ -36,8 +34,7 @@ describe('autodux().slice', async should => {
   });
 });
 
-describe('autodux().actions', async should => {
-  const { assert } = should();
+describe('autodux().actions', async assert => {
 
   assert({
     given: 'autodux is called with args',
@@ -100,8 +97,7 @@ describe('autodux().actions', async should => {
   }
 });
 
-describe('autodux().reducer', async should => {
-  const { assert } = should();
+describe('autodux().reducer', async assert => {
 
   {
     const {
@@ -153,8 +149,7 @@ describe('autodux().reducer', async should => {
   }
 });
 
-describe('autodux().selectors', async should => {
-  const { assert } = should();
+describe('autodux().selectors', async assert => {
   const { getValue } = createDux().selectors;
 
   {
@@ -235,8 +230,7 @@ describe('autodux().selectors', async should => {
   }
 });
 
-describe('autodux() action creators', async should => {
-  const { assert } = should();
+describe('autodux() action creators', async assert => {
 
   {
     const {
@@ -385,8 +379,7 @@ describe('autodux() action creators', async should => {
   }
 });
 
-describe('autodux/assign(key)', async should => {
-  const { assert } = should();
+describe('autodux/assign(key)', async assert => {
 
   const {
     actions: {
@@ -426,8 +419,7 @@ describe('autodux/assign(key)', async should => {
   });
 });
 
-describe('autodux/default', async should => {
-  const { assert } = should();
+describe('autodux/default', async assert => {
   {
     const {
       actions: {

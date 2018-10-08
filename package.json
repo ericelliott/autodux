@@ -29,12 +29,12 @@
   },
   "homepage": "https://github.com/ericelliott/autodux#readme",
   "devDependencies": {
-    "eslint": "5.2.0",
-    "prepublish": "1.7.0",
-    "riteway": "2.0.4",
+    "eslint": "5.6.1",
+    "prepublish": "2.2.0",
+    "riteway": "3.0.0",
     "tap-colorize": "1.2.0",
     "tape": "4.9.1",
-    "updtr": "2.0.0",
+    "updtr": "3.1.0",
     "watch": "1.0.2"
   },
   "dependencies": {

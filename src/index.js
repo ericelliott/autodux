@@ -134,6 +134,7 @@ const autodux = ({
 };
 
 module.exports = autodux;
+module.exports.default = autodux;
 module.exports.id = id;
 
 module.exports.assign = key => (state, payload) =>

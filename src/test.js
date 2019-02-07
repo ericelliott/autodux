@@ -4,38 +4,38 @@ const autodux = require('./');
 const id = autodux.id;
 const assign = autodux.assign;
 
-const createDux = () => autodux({
-  slice: 'counter',
-  initial: 0,
-  actions: {
-    increment: {
-      reducer: state => state + 1
+const createDux = () =>
+  autodux({
+    slice: 'counter',
+    initial: 0,
+    actions: {
+      increment: {
+        reducer: state => state + 1
+      },
+      decrement: {
+        reducer: state => state - 1
+      },
+      multiply: {
+        create: id,
+        reducer: (state, payload) => state * payload
+      }
     },
-    decrement: {
-      reducer: state => state - 1
-    },
-    multiply: {
-      create: id,
-      reducer: (state, payload) => state * payload
+    selectors: {
+      getValue: id,
+      getStore: (_, store) => store
     }
-  },
-  selectors: {
-    getValue: id,
-    getStore: (_, store) => store
-  }
-});
+  });
 
 describe('autodux().slice', async assert => {
   assert({
     given: 'autodux is called with args',
     should: 'have the correct string value',
     actual: createDux().slice,
-    expected: 'counter',
+    expected: 'counter'
   });
 });
 
 describe('autodux().actions', async assert => {
-
   assert({
     given: 'autodux is called with args',
     should: 'contain action creators',
@@ -53,7 +53,7 @@ describe('autodux().actions', async assert => {
     const expected = [
       { type: 'counter/increment', payload: undefined },
       { type: 'counter/decrement', payload: undefined },
-      { type: 'counter/multiply', payload: 2 },
+      { type: 'counter/multiply', payload: 2 }
     ];
 
     assert({
@@ -66,12 +66,7 @@ describe('autodux().actions', async assert => {
 
   {
     const {
-      actions: {
-        setCounter,
-        increment,
-        decrement,
-        multiply
-      }
+      actions: { setCounter, increment, decrement, multiply }
     } = createDux();
 
     const actual = [
@@ -98,23 +93,14 @@ describe('autodux().actions', async assert => {
 });
 
 describe('autodux().reducer', async assert => {
-
   {
     const {
-      actions: {
-        increment,
-        decrement
-      },
+      actions: { increment, decrement },
       reducer,
       initial
     } = createDux();
 
-    const actions = [
-      increment(),
-      increment(),
-      increment(),
-      decrement()
-    ];
+    const actions = [increment(), increment(), increment(), decrement()];
 
     assert({
       given: 'a reducer',
@@ -126,19 +112,12 @@ describe('autodux().reducer', async assert => {
 
   {
     const {
-      actions: {
-        increment,
-        multiply
-      },
+      actions: { increment, multiply },
       reducer,
       initial
     } = createDux();
 
-    const actions = [
-      increment(),
-      increment(),
-      multiply(2)
-    ];
+    const actions = [increment(), increment(), multiply(2)];
 
     assert({
       given: 'a reducer',
@@ -170,7 +149,9 @@ describe('autodux().selectors', async assert => {
       slice: initial
     };
 
-    const { selectors: { getKey1, getKey2 } } = autodux({
+    const {
+      selectors: { getKey1, getKey2 }
+    } = autodux({
       slice: 'slice',
       initial
     });
@@ -198,9 +179,7 @@ describe('autodux().selectors', async assert => {
     };
 
     const {
-      selectors: {
-        getUser
-      }
+      selectors: { getUser }
     } = autodux({
       slice: 'user',
       initial: {
@@ -208,7 +187,6 @@ describe('autodux().selectors', async assert => {
         avatar: 'anon.png'
       }
     });
-
 
     assert({
       given: 'selectors',
@@ -231,16 +209,13 @@ describe('autodux().selectors', async assert => {
 });
 
 describe('autodux() action creators', async assert => {
-
   {
     const {
-      actions: {
-        setUserName
-      }
+      actions: { setUserName }
     } = autodux({
       slice: 'user',
       initial: {
-        userName: 'Anonymous',
+        userName: 'Anonymous'
       }
     });
     const userName = 'Foo';
@@ -248,19 +223,19 @@ describe('autodux() action creators', async assert => {
     const actual = setUserName(userName);
     const expected = {
       type: 'user/setUserName',
-      payload: userName,
+      payload: userName
     };
 
     assert({
       given: 'no action for supplied initial state',
-      should: 'return an action creator which returns an action with the correct type and payload',
+      should:
+        'return an action creator which returns an action with the correct type and payload',
       actual,
-      expected,
+      expected
     });
   }
 
   {
-
     const value = 'UserName';
     const { actions } = autodux({
       slice: 'emptyCreator',
@@ -327,17 +302,10 @@ describe('autodux() action creators', async assert => {
   }
 
   {
-
     const {
       reducer,
-      actions: {
-        increment,
-        decrement,
-        multiply
-      },
-      selectors: {
-        getValue
-      }
+      actions: { increment, decrement, multiply },
+      selectors: { getValue }
     } = autodux({
       // the slice of state your reducer controls
       slice: 'counter',
@@ -380,12 +348,8 @@ describe('autodux() action creators', async assert => {
 });
 
 describe('autodux/assign(key)', async assert => {
-
   const {
-    actions: {
-      setUserName,
-      setAvatar
-    },
+    actions: { setUserName, setAvatar },
     reducer
   } = autodux({
     slice: 'user',
@@ -401,10 +365,10 @@ describe('autodux/assign(key)', async assert => {
   const userName = 'Foo';
   const avatar = 'foo.png';
 
-  const actual = [
-    setUserName(userName),
-    setAvatar(avatar)
-  ].reduce(reducer, undefined);
+  const actual = [setUserName(userName), setAvatar(avatar)].reduce(
+    reducer,
+    undefined
+  );
 
   const expected = {
     userName,
@@ -415,16 +379,14 @@ describe('autodux/assign(key)', async assert => {
     given: 'default actions (without action keys)',
     should: 'set the key in the state to the payload value',
     actual,
-    expected,
+    expected
   });
 });
 
 describe('autodux/default', async assert => {
   {
     const {
-      actions: {
-        setUser
-      },
+      actions: { setUser },
       reducer
     } = autodux({
       slice: 'user',
@@ -447,16 +409,13 @@ describe('autodux/default', async assert => {
       given: 'actions (without action keys)',
       should: 'create `set${slice}` to spread payload into state',
       actual,
-      expected,
+      expected
     });
   }
 
   {
     const {
-      actions: {
-        setUserName,
-        setAvatar
-      },
+      actions: { setUserName, setAvatar },
       reducer
     } = autodux({
       slice: 'user',
@@ -468,10 +427,10 @@ describe('autodux/default', async assert => {
     const userName = 'Foo';
     const avatar = 'foo.png';
 
-    const actual = [
-      setUserName(userName),
-      setAvatar(avatar)
-    ].reduce(reducer, undefined);
+    const actual = [setUserName(userName), setAvatar(avatar)].reduce(
+      reducer,
+      undefined
+    );
 
     const expected = {
       userName,
@@ -482,8 +441,7 @@ describe('autodux/default', async assert => {
       given: 'actions (without action keys)',
       should: 'create assignment actions for each key in initial',
       actual,
-      expected,
+      expected
     });
   }
 });
-

@@ -7,7 +7,7 @@
   "module": "dist/index-esm.js",
   "scripts": {
     "lint": "eslint . && echo 'Lint finished.'",
-    "test": "node src/test.js | tap-colorize",
+    "test": "riteway src/test.js | tap-nirvana",
     "test-coverage": "nyc npm test",
     "test-coverage-ci": "nyc --reporter=text-lcov npm test",
     "show-coverage-ci": "nyc report --reporter=text-lcov | coveralls",
@@ -44,8 +44,7 @@
     "prepublish": "2.2.0",
     "prettier": "1.16.4",
     "riteway": "4.0.1",
-    "tap-colorize": "1.2.0",
-    "tape": "4.9.1",
+    "tap-nirvana": "1.1.0",
     "updtr": "3.1.0",
     "watch": "1.0.2"
   },

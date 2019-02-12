@@ -4,108 +4,210 @@ const autodux = require('./');
 const id = autodux.id;
 const assign = autodux.assign;
 
-const createDux = () =>
+const createCounterDux = () =>
   autodux({
+    // The slice of state your reducer controls.
     slice: 'counter',
+
+    // The initial value for the slice of state.
     initial: 0,
+
+    // No need to implement switching logic, it's done for you.
     actions: {
-      increment: {
-        reducer: state => state + 1
-      },
+      // Shorthand definition of action and corresponding reducer.
+      increment: state => state + 1,
+
+      // Alternative definition of action and corresponding reducer.
       decrement: {
         reducer: state => state - 1
       },
+
+      // Another way to define action and reducer.
       multiply: {
-        create: id,
+        // Define custom mapping of action creator parameter to action payload.
+        create: ({ by }) => by,
+
         reducer: (state, payload) => state * payload
+      },
+
+      // Define action and reducer without custom mapping of action creator parameter to action payload.
+      randomize: {
+        reducer: (_, { max, min }) =>
+          Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min) + 1)) +
+          Math.ceil(min)
       }
     },
+
     selectors: {
+      // No need to select the state slice, it's done for you.
       getValue: id,
-      getStore: (_, store) => store
+
+      // Get access to the root state in case you need it.
+      getSomething: (_, rootState) => rootState
     }
   });
 
-describe('autodux().slice', async assert => {
+const createWeirdDux = () => autodux();
+
+describe('autodux({ slice: … }).slice', async assert => {
   assert({
-    given: 'autodux is called with args',
-    should: 'have the correct string value',
-    actual: createDux().slice,
+    given: "'autodux' is called with 'slice'",
+    should: 'have the correct value',
+    actual: createCounterDux().slice,
     expected: 'counter'
   });
 });
 
-describe('autodux().actions', async assert => {
+describe('autodux({ initial: … }).initial', async assert => {
   assert({
-    given: 'autodux is called with args',
+    given: "'autodux' is called with 'initial'",
+    should: 'return valid initial state',
+    actual: createCounterDux().initial,
+    expected: 0
+  });
+});
+
+describe('autodux({ actions: … }).actions', async assert => {
+  assert({
+    given: "'autodux' is called with 'actions'",
     should: 'contain action creators',
-    actual: Object.keys(createDux().actions),
-    expected: ['setCounter', 'increment', 'decrement', 'multiply']
+    actual: Object.keys(createCounterDux().actions),
+    expected: ['setCounter', 'increment', 'decrement', 'multiply', 'randomize']
   });
 
   {
-    const { actions } = createDux();
-    const actual = [
-      actions.increment(),
-      actions.decrement(),
-      actions.multiply(2)
-    ];
-    const expected = [
-      { type: 'counter/increment', payload: undefined },
-      { type: 'counter/decrement', payload: undefined },
-      { type: 'counter/multiply', payload: 2 }
-    ];
+    const { actions } = createCounterDux();
 
     assert({
-      given: 'autodux is called with args',
-      should: 'produce correct action objects',
-      actual,
-      expected
+      given: "'autodux' is called with 'actions'",
+      should: 'contain action creators that return correct action objects',
+      actual: [
+        actions.increment(),
+        actions.decrement(),
+        actions.multiply({ by: 2 }),
+        actions.randomize({ min: 0, max: 5 })
+      ],
+      expected: [
+        { type: 'counter/increment', payload: undefined },
+        { type: 'counter/decrement', payload: undefined },
+        { type: 'counter/multiply', payload: 2 },
+        { type: 'counter/randomize', payload: { min: 0, max: 5 } }
+      ]
     });
   }
 
   {
     const {
-      actions: { setCounter, increment, decrement, multiply }
-    } = createDux();
-
-    const actual = [
-      setCounter.type,
-      increment.type,
-      decrement.type,
-      multiply.type
-    ];
-
-    const expected = [
-      'counter/setCounter',
-      'counter/increment',
-      'counter/decrement',
-      'counter/multiply'
-    ];
+      actions: { setCounter, increment, decrement, multiply, randomize }
+    } = createCounterDux();
 
     assert({
-      given: 'autodux is called with args',
-      should: 'produce namespaced action type constants',
-      actual,
-      expected
+      given: "'autodux' is called with 'actions'",
+      should: 'contain action creators with correct action type constants',
+      actual: [
+        setCounter.type,
+        increment.type,
+        decrement.type,
+        multiply.type,
+        randomize.type
+      ],
+      expected: [
+        'counter/setCounter',
+        'counter/increment',
+        'counter/decrement',
+        'counter/multiply',
+        'counter/randomize'
+      ]
+    });
+  }
+
+  {
+    const { actions } = createCounterDux();
+
+    const value = 50;
+
+    assert({
+      given: "'autodux' is called with 'actions'",
+      should:
+        "contain action creator ('set${slice}') for setting the state of the slice",
+      actual: actions.setCounter(value),
+      expected: {
+        type: 'counter/setCounter',
+        payload: value
+      }
+    });
+  }
+
+  {
+    const { actions, reducer, initial } = createCounterDux();
+
+    const min = 5;
+    const max = 9;
+
+    const counterState = [actions.randomize({ min, max })].reduce(
+      reducer,
+      initial
+    );
+
+    assert({
+      given: "'autodux' is called with 'actions'",
+      should:
+        'return action creator that maps parameters to action payload by default',
+      actual: counterState >= min && counterState <= max,
+      expected: true
     });
   }
 });
 
-describe('autodux().reducer', async assert => {
+describe('autodux({ … }).actions', async assert => {
+  {
+    const {
+      actions: { setUserName, setAge }
+    } = autodux({
+      slice: 'user',
+      initial: {
+        userName: 'Anonymous',
+        age: 0
+      }
+    });
+
+    const userName = 'Freddie';
+    const age = 23;
+
+    assert({
+      given: "'autodux' is called without 'actions'",
+      should:
+        'contain correct action creators for each key in the initial state',
+      actual: [setUserName(userName), setAge(age)],
+      expected: [
+        {
+          type: 'user/setUserName',
+          payload: userName
+        },
+        {
+          type: 'user/setAge',
+          payload: age
+        }
+      ]
+    });
+  }
+});
+
+describe('autodux({ actions: … }).reducer', async assert => {
   {
     const {
       actions: { increment, decrement },
       reducer,
       initial
-    } = createDux();
-
-    const actions = [increment(), increment(), increment(), decrement()];
+    } = createCounterDux();
 
     assert({
-      given: 'a reducer',
-      should: 'switch correctly',
-      actual: actions.reduce(reducer, initial),
+      given: "'autodux' is called with 'actions'",
+      should: 'return reducer that switches correctly',
+      actual: [increment(), increment(), increment(), decrement()].reduce(
+        reducer,
+        initial
+      ),
       expected: 2
     });
   }
@@ -115,25 +217,43 @@ describe('autodux().reducer', async assert => {
       actions: { increment, multiply },
       reducer,
       initial
-    } = createDux();
-
-    const actions = [increment(), increment(), multiply(2)];
+    } = createCounterDux();
 
     assert({
-      given: 'a reducer',
-      should: 'deliver action payloads',
-      actual: actions.reduce(reducer, initial),
+      given: "'autodux' is called with 'actions'",
+      should: 'return reducer that considers delivering action payloads',
+      actual: [increment(), increment(), multiply({ by: 2 })].reduce(
+        reducer,
+        initial
+      ),
       expected: 4
     });
   }
 });
 
-describe('autodux().selectors', async assert => {
-  const { getValue } = createDux().selectors;
+describe('autodux({ … }).reducer', async assert => {
+  {
+    const initial = { a: 'a' };
+
+    const { reducer } = autodux({
+      initial
+    });
+
+    assert({
+      given: "'autodux' is called without 'actions'",
+      should: 'contain reducer that returns valid default state',
+      actual: reducer(),
+      expected: initial
+    });
+  }
+});
+
+describe('autodux({ slice: …, initial: … }).selectors', async assert => {
+  const { getValue } = createCounterDux().selectors;
 
   {
     assert({
-      given: 'a property and value',
+      given: "'autodux' is called with 'slice' and 'initial'",
       should: 'return a selector that knows its state slice',
       actual: getValue({ counter: 3 }),
       expected: 3
@@ -141,213 +261,72 @@ describe('autodux().selectors', async assert => {
   }
 
   {
-    const initial = {
-      key1: 'value 1',
-      key2: 'value 2'
-    };
-    const store = {
-      slice: initial
+    const rootState = {
+      sliceName: {
+        key1: 'value 1',
+        key2: 'value 2'
+      }
     };
 
     const {
-      selectors: { getKey1, getKey2 }
-    } = autodux({
-      slice: 'slice',
+      selectors: { getKey1, getKey2 },
       initial
+    } = autodux({
+      slice: 'sliceName',
+      initial: rootState.sliceName
     });
 
-    const actual = {
-      key1: getKey1(store),
-      key2: getKey2(store)
-    };
-
     assert({
-      given: 'a property and value',
+      given: "'autodux' is called with 'slice' and 'initial'",
       should: 'expose a selector for each key in the initial state',
-      actual,
-      expected: initial
-    });
-  }
-
-  {
-    const initial = {
-      userName: 'Anonymous',
-      avatar: 'anonymous.png'
-    };
-    const store = {
-      user: initial
-    };
-
-    const {
-      selectors: { getUser }
-    } = autodux({
-      slice: 'user',
-      initial: {
-        userName: 'Anonymous',
-        avatar: 'anon.png'
-      }
-    });
-
-    assert({
-      given: 'selectors',
-      should: 'expose a selector for the entire reducer state',
-      actual: getUser(store),
-      expected: initial
-    });
-  }
-
-  {
-    const { getStore } = createDux().selectors;
-
-    assert({
-      given: 'a store',
-      should: 'pass entire store as a second parameter to selectors',
-      actual: getStore({ counter: 3, foo: 'bar' }),
-      expected: { counter: 3, foo: 'bar' }
-    });
-  }
-});
-
-describe('autodux() action creators', async assert => {
-  {
-    const {
-      actions: { setUserName }
-    } = autodux({
-      slice: 'user',
-      initial: {
-        userName: 'Anonymous'
-      }
-    });
-    const userName = 'Foo';
-
-    const actual = setUserName(userName);
-    const expected = {
-      type: 'user/setUserName',
-      payload: userName
-    };
-
-    assert({
-      given: 'no action for supplied initial state',
-      should:
-        'return an action creator which returns an action with the correct type and payload',
-      actual,
-      expected
-    });
-  }
-
-  {
-    const value = 'UserName';
-    const { actions } = autodux({
-      slice: 'emptyCreator',
-      actions: {
-        nothing: {
-          reducer: x => x
-        }
-      }
-    });
-
-    const expected = {
-      type: 'emptyCreator/nothing',
-      payload: value
-    };
-
-    assert({
-      given: 'no action creators',
-      should: 'should default missing action creators to identity',
-      actual: actions.nothing(value),
-      expected
-    });
-  }
-
-  {
-    const value = 'UserName';
-    const { actions } = autodux({
-      slice: 'emptyCreator',
-      actions: {
-        nothing: {
-          reducer: x => x
-        }
-      }
-    });
-
-    const expected = {
-      type: 'emptyCreator/nothing',
-      payload: value
-    };
-
-    assert({
-      given: 'no reducer',
-      should: 'default missing reducer to spread payload into state',
-      actual: actions.nothing(value),
-      expected
-    });
-  }
-
-  {
-    const initial = { a: 'a' };
-
-    const { reducer } = autodux({
-      initial,
-      actions: {
-        reducer: x => x
-      }
-    });
-
-    assert({
-      given: 'no args',
-      should: 'return valid default state',
-      actual: reducer(),
-      expected: initial
-    });
-  }
-
-  {
-    const {
-      reducer,
-      actions: { increment, decrement, multiply },
-      selectors: { getValue }
-    } = autodux({
-      // the slice of state your reducer controls
-      slice: 'counter',
-
-      // The initial value of your reducer state
-      initial: 0,
-
-      // No need to implement switching logic -- it's
-      // done for you.
-      actions: {
-        increment: state => state + 1,
-        decrement: state => state - 1,
-        multiply: {
-          create: ({ by }) => by,
-          reducer: (state, payload) => state * payload
-        }
+      actual: {
+        key1: getKey1(rootState),
+        key2: getKey2(rootState)
       },
+      expected: initial
+    });
+  }
 
-      // No need to select the state slice -- it's done for you.
-      selectors: {
-        getValue: id
+  {
+    const rootState = {
+      user: {
+        userName: 'Anonymous',
+        avatar: 'anonymous.png'
       }
+    };
+
+    const {
+      selectors: { getUser },
+      initial
+    } = autodux({
+      slice: 'user',
+      initial: rootState.user
     });
 
-    const state = [
-      increment(),
-      increment(),
-      increment(),
-      decrement(),
-      multiply({ by: 2 })
-    ].reduce(reducer, undefined);
+    assert({
+      given: "'autodux' is called with 'slice' and 'initial'",
+      should: 'expose a selector for the entire state of the slice',
+      actual: getUser(rootState),
+      expected: initial
+    });
+  }
+
+  {
+    const { getSomething } = createCounterDux().selectors;
+
+    const rootState = { counter: 3, foo: 'bar' };
 
     assert({
-      given: 'functions as action values',
-      should: 'use function as a reducer',
-      actual: getValue({ counter: state }),
-      expected: 4
+      given: "'autodux' is called with argument",
+      should:
+        'return selector that passes the root state object as the second parameter',
+      actual: getSomething(rootState),
+      expected: rootState
     });
   }
 });
 
-describe('autodux/assign(key)', async assert => {
+describe('assign(key)', async assert => {
   const {
     actions: { setUserName, setAvatar },
     reducer
@@ -362,86 +341,98 @@ describe('autodux/assign(key)', async assert => {
       setAvatar: assign('avatar')
     }
   });
+
   const userName = 'Foo';
   const avatar = 'foo.png';
 
-  const actual = [setUserName(userName), setAvatar(avatar)].reduce(
-    reducer,
-    undefined
-  );
-
-  const expected = {
-    userName,
-    avatar
-  };
-
   assert({
-    given: 'default actions (without action keys)',
-    should: 'set the key in the state to the payload value',
-    actual,
-    expected
+    given: 'a key',
+    should:
+      'return a reducer that sets the key in the state to the action payload value',
+    actual: [setUserName(userName), setAvatar(avatar)].reduce(
+      reducer,
+      undefined
+    ),
+    expected: {
+      userName,
+      avatar
+    }
   });
 });
 
-describe('autodux/default', async assert => {
+// Tests for edge cases.
+describe('autodux()', async assert => {
+  assert({
+    given: "'autodux' is called without an argument",
+    should: "return 'slice' with an empty name",
+    actual: createWeirdDux().slice,
+    expected: ''
+  });
+
+  assert({
+    given: "'autodux' is called without an argument",
+    should: 'return initial state that is an empty string',
+    actual: createWeirdDux().initial,
+    expected: ''
+  });
+
+  assert({
+    given: "'autodux' is called without an argument",
+    should: "return a single 'set' action creator",
+    actual: Object.keys(createWeirdDux().actions),
+    expected: ['set']
+  });
+
+  assert({
+    given: "'autodux' is called without an argument",
+    should: "return a single 'set' action creator with the correct type",
+    actual: createWeirdDux().actions.set.type,
+    expected: '/set'
+  });
+
+  assert({
+    given: "'autodux' is called without an argument",
+    should:
+      "return a single 'set' action creator that produces correct action object",
+    actual: createWeirdDux().actions.set(),
+    expected: { type: '/set', payload: undefined }
+  });
+
   {
     const {
-      actions: { setUser },
-      reducer
-    } = autodux({
-      slice: 'user',
-      initial: {
-        userName: 'Anonymous',
-        avatar: 'anonymous.png'
-      }
-    });
-    const userName = 'Foo';
-    const avatar = 'foo.png';
-
-    const actual = reducer(undefined, setUser({ userName, avatar }));
-
-    const expected = {
-      userName,
-      avatar
-    };
+      actions: { set },
+      reducer,
+      initial
+    } = createWeirdDux();
 
     assert({
-      given: 'actions (without action keys)',
-      should: 'create `set${slice}` to spread payload into state',
-      actual,
-      expected
+      given: "'autodux' is called without an argument",
+      should: 'return reducer that changes the state to an empty object',
+      actual: [set()].reduce(reducer, initial),
+      expected: {}
     });
   }
 
+  assert({
+    given: "'autodux' is called without an argument",
+    should: "return a single 'get' selector",
+    actual: Object.keys(createWeirdDux().selectors),
+    expected: ['get']
+  });
+
   {
     const {
-      actions: { setUserName, setAvatar },
-      reducer
-    } = autodux({
-      slice: 'user',
-      initial: {
-        userName: 'Anonymous',
-        avatar: 'anonymous.png'
-      }
-    });
-    const userName = 'Foo';
-    const avatar = 'foo.png';
+      selectors: { get },
+      initial
+    } = createWeirdDux();
 
-    const actual = [setUserName(userName), setAvatar(avatar)].reduce(
-      reducer,
-      undefined
-    );
-
-    const expected = {
-      userName,
-      avatar
-    };
+    const rootState = { '': initial };
 
     assert({
-      given: 'actions (without action keys)',
-      should: 'create assignment actions for each key in initial',
-      actual,
-      expected
+      given: "'autodux' is called without an argument",
+      should: "return a single 'get' selector that returns initial state",
+      actual: get(rootState),
+      expected: initial
     });
   }
 });

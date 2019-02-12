@@ -36,7 +36,7 @@
     "lint-staged": "8.1.3",
     "prepublish": "2.2.0",
     "prettier": "1.16.4",
-    "riteway": "3.0.0",
+    "riteway": "3.0.1",
     "tap-colorize": "1.2.0",
     "tape": "4.9.1",
     "updtr": "3.1.0",

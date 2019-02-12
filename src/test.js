@@ -4,23 +4,19 @@ const autodux = require('./');
 const id = autodux.id;
 const assign = autodux.assign;
 
-const createCounterDux = () =>
+const createCounterDux = (initial = 0) =>
   autodux({
     // The slice of state your reducer controls.
     slice: 'counter',
 
     // The initial value for the slice of state.
-    initial: 0,
+    initial,
 
     // No need to implement switching logic, it's done for you.
     actions: {
       // Shorthand definition of action and corresponding reducer.
       increment: state => state + 1,
-
-      // Alternative definition of action and corresponding reducer.
-      decrement: {
-        reducer: state => state - 1
-      },
+      decrement: state => state - 1,
 
       // Another way to define action and reducer.
       multiply: {
@@ -31,10 +27,8 @@ const createCounterDux = () =>
       },
 
       // Define action and reducer without custom mapping of action creator parameter to action payload.
-      randomize: {
-        reducer: (_, { max, min }) =>
-          Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min) + 1)) +
-          Math.ceil(min)
+      divide: {
+        reducer: (state, payload) => Math.floor(state / payload)
       }
     },
 
@@ -43,7 +37,7 @@ const createCounterDux = () =>
       getValue: id,
 
       // Get access to the root state in case you need it.
-      getSomething: (_, rootState) => rootState
+      getState: (_, rootState) => rootState
     }
   });
 
@@ -72,7 +66,7 @@ describe('autodux({ actions: … }).actions', async assert => {
     given: "'autodux' is called with 'actions'",
     should: 'contain action creators',
     actual: Object.keys(createCounterDux().actions),
-    expected: ['setCounter', 'increment', 'decrement', 'multiply', 'randomize']
+    expected: ['setCounter', 'increment', 'decrement', 'multiply', 'divide']
   });
 
   {
@@ -85,20 +79,20 @@ describe('autodux({ actions: … }).actions', async assert => {
         actions.increment(),
         actions.decrement(),
         actions.multiply({ by: 2 }),
-        actions.randomize({ min: 0, max: 5 })
+        actions.divide(1)
       ],
       expected: [
         { type: 'counter/increment', payload: undefined },
         { type: 'counter/decrement', payload: undefined },
         { type: 'counter/multiply', payload: 2 },
-        { type: 'counter/randomize', payload: { min: 0, max: 5 } }
+        { type: 'counter/divide', payload: 1 }
       ]
     });
   }
 
   {
     const {
-      actions: { setCounter, increment, decrement, multiply, randomize }
+      actions: { setCounter, increment, decrement, multiply, divide }
     } = createCounterDux();
 
     assert({
@@ -109,14 +103,14 @@ describe('autodux({ actions: … }).actions', async assert => {
         increment.type,
         decrement.type,
         multiply.type,
-        randomize.type
+        divide.type
       ],
       expected: [
         'counter/setCounter',
         'counter/increment',
         'counter/decrement',
         'counter/multiply',
-        'counter/randomize'
+        'counter/divide'
       ]
     });
   }
@@ -139,22 +133,14 @@ describe('autodux({ actions: … }).actions', async assert => {
   }
 
   {
-    const { actions, reducer, initial } = createCounterDux();
-
-    const min = 5;
-    const max = 9;
-
-    const counterState = [actions.randomize({ min, max })].reduce(
-      reducer,
-      initial
-    );
+    const { actions, reducer, initial } = createCounterDux(128);
 
     assert({
       given: "'autodux' is called with 'actions'",
       should:
         'return action creator that maps parameters to action payload by default',
-      actual: counterState >= min && counterState <= max,
-      expected: true
+      actual: [actions.divide(2)].reduce(reducer, initial),
+      expected: 64
     });
   }
 });
@@ -312,7 +298,7 @@ describe('autodux({ slice: …, initial: … }).selectors', async assert => {
   }
 
   {
-    const { getSomething } = createCounterDux().selectors;
+    const { getState } = createCounterDux().selectors;
 
     const rootState = { counter: 3, foo: 'bar' };
 
@@ -320,7 +306,7 @@ describe('autodux({ slice: …, initial: … }).selectors', async assert => {
       given: "'autodux' is called with argument",
       should:
         'return selector that passes the root state object as the second parameter',
-      actual: getSomething(rootState),
+      actual: getState(rootState),
       expected: rootState
     });
   }

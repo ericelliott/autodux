@@ -9,6 +9,8 @@
     "lint": "eslint . && echo 'Lint finished.'",
     "test": "node src/test.js | tap-colorize",
     "test-coverage": "nyc npm test",
+    "test-coverage-ci": "nyc --reporter=text-lcov npm test",
+    "show-coverage-ci": "nyc report --reporter=text-lcov | coveralls",
     "show-coverage-text": "nyc report --reporter=text || echo \"Run 'npm run test-coverage' first.\"",
     "show-coverage-html": "open ./coverage/index.html || echo \"Run 'npm run test-coverage' first.\"",
     "debug": "echo 'Open debugger in Chrome: \"chrome://inspect\".' && node --inspect-brk src/test.js",
@@ -32,6 +34,7 @@
   },
   "homepage": "https://github.com/ericelliott/autodux#readme",
   "devDependencies": {
+    "coveralls": "3.0.2",
     "eslint": "5.13.0",
     "eslint-config-prettier": "4.0.0",
     "eslint-plugin-prettier": "3.0.1",

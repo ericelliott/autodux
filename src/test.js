@@ -207,7 +207,8 @@ describe('autodux({ actions: … }).reducer', async assert => {
 
     assert({
       given: "'autodux' is called with 'actions'",
-      should: 'return reducer that considers delivering action payloads',
+      should:
+        'return reducer that receives action payload as the second parameter',
       actual: [increment(), increment(), multiply({ by: 2 })].reduce(
         reducer,
         initial
@@ -248,26 +249,26 @@ describe('autodux({ slice: …, initial: … }).selectors', async assert => {
 
   {
     const rootState = {
-      sliceName: {
-        key1: 'value 1',
-        key2: 'value 2'
+      album: {
+        name: 'The Works',
+        year: 1984
       }
     };
 
     const {
-      selectors: { getKey1, getKey2 },
+      selectors: { getName, getYear },
       initial
     } = autodux({
-      slice: 'sliceName',
-      initial: rootState.sliceName
+      slice: 'album',
+      initial: rootState.album
     });
 
     assert({
       given: "'autodux' is called with 'slice' and 'initial'",
       should: 'expose a selector for each key in the initial state',
       actual: {
-        key1: getKey1(rootState),
-        key2: getKey2(rootState)
+        name: getName(rootState),
+        year: getYear(rootState)
       },
       expected: initial
     });

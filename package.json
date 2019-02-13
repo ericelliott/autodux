@@ -38,7 +38,7 @@
     "prettier": "1.16.4",
     "riteway": "3.0.1",
     "tap-colorize": "1.2.0",
-    "tape": "4.9.1",
+    "tape": "4.10.0",
     "updtr": "3.1.0",
     "watch": "1.0.2"
   },

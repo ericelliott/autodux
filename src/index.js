@@ -1,9 +1,19 @@
 const get = require('lodash/fp/get');
 const capitalize = require('lodash/upperFirst');
 
+const { SLICE_VALUE_ERROR } = require('./errors');
+
 const id = x => x;
 const selectIf = predicate => x => predicate(x) && x;
 const isFunction = f => typeof f === 'function';
+const isString = s => typeof s === 'string';
+const isNumber = n => typeof n === 'number';
+const isBoolean = b => typeof b === 'boolean';
+const isUndefined = v => typeof v === 'undefined';
+const isNull = v => v === null;
+const isPrimitive = v =>
+  [isString, isNumber, isBoolean, isUndefined, isNull].some(f => f(v));
+const isEmptyString = s => s === '';
 const selectFunction = selectIf(isFunction);
 
 // # Selector creation:
@@ -49,7 +59,9 @@ const createAction = (slice, action, key, type = `${slice}/${action}`) => ({
   create: Object.assign(payload => payload, { type }),
 
   reducer: (state, payload) =>
-    Object.assign({}, state, key ? { [key]: payload } : payload)
+    !key && isPrimitive(payload)
+      ? payload
+      : Object.assign({}, state, key ? { [key]: payload } : payload)
 });
 
 const getInitialActions = (slice, initial) =>
@@ -93,12 +105,19 @@ const createMappedActions = (slice, actions) =>
   );
 // /action creation
 
-const autodux = ({
-  initial = '',
-  actions = {},
-  selectors = {},
-  slice = ''
-} = {}) => {
+const isSliceValid = slice => isString(slice) && !isEmptyString(slice);
+
+const checkOptions = ({ slice }) => {
+  if (!isSliceValid(slice)) {
+    throw new Error(SLICE_VALUE_ERROR);
+  }
+};
+
+const autodux = (options = {}) => {
+  checkOptions(options);
+
+  const { initial = '', actions = {}, selectors = {}, slice } = options;
+
   const allSelectors = Object.assign(
     {},
     createInitSelectors(slice, initial),

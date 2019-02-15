@@ -2,9 +2,7 @@
 
 Redux on autopilot.
 
-## Status: Early Release
-
-This library is being production tested in several large apps.
+Brought to you by [EricElliottJS.com](https://EricElliottJS.com) and [DevAnywhere.io](https://devanywhere.io).
 
 ## Install
 

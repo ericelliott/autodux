@@ -43,7 +43,7 @@
     "nyc": "13.3.0",
     "prepublish": "2.2.0",
     "prettier": "1.16.4",
-    "riteway": "4.0.1",
+    "riteway": "5.0.0",
     "tap-nirvana": "1.1.0",
     "updtr": "3.1.0",
     "watch": "1.0.2"

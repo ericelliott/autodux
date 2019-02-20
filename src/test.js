@@ -1,7 +1,6 @@
 const { describe, Try } = require('riteway');
 
-const { SLICE_VALUE_ERROR } = require('./errors');
-const autodux = require('./');
+const autodux = require('.');
 
 const { id, assign } = autodux;
 
@@ -356,12 +355,12 @@ describe('autodux()', async assert => {
     given: "'autodux' is called without an argument",
     should: 'throw an error',
     actual: Try(autodux).toString(),
-    expected: new Error(SLICE_VALUE_ERROR).toString()
+    expected: new Error("Proper value of 'slice' is required!").toString()
   });
 });
 
 describe("autodux({ …, slice: undefined | null | '' })", async assert => {
-  const error = new Error(SLICE_VALUE_ERROR).toString();
+  const error = new Error("Proper value of 'slice' is required!").toString();
 
   assert({
     given: "'autodux' is called with improper 'slice' value",

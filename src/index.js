@@ -1,8 +1,6 @@
 const get = require('lodash/fp/get');
 const capitalize = require('lodash/upperFirst');
 
-const { SLICE_VALUE_ERROR } = require('./errors');
-
 const id = x => x;
 const selectIf = predicate => x => predicate(x) && x;
 const isFunction = f => typeof f === 'function';
@@ -15,6 +13,8 @@ const isPrimitive = v =>
   [isString, isNumber, isBoolean, isUndefined, isNull].some(f => f(v));
 const isEmptyString = s => s === '';
 const selectFunction = selectIf(isFunction);
+
+const SLICE_VALUE_ERROR = "Proper value of 'slice' is required!";
 
 // # Selector creation:
 const toGetter = s => `get${capitalize(s)}`;

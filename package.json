@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "module": "src/core.js",
   "scripts": {
-    "lint": "npm run lint-js && npm run lint-md && echo 'Lint finished.'",
+    "lint": "npm run -s lint-js && npm run -s lint-md && echo 'Lint finished.'",
     "lint-js": "eslint .",
     "lint-md": "markdownlint *.md && textlint *.md",
     "test": "node -r esm ./node_modules/.bin/riteway src/test.js | tap-nirvana",

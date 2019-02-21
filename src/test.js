@@ -1,8 +1,6 @@
-const { describe, Try } = require('riteway');
+import { describe, Try } from 'riteway';
 
-const autodux = require('.');
-
-const { id, assign } = autodux;
+import autodux, { id, assign } from './core';
 
 const createCounterDux = (initial = 0) =>
   autodux({

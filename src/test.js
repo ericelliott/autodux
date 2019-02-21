@@ -1,6 +1,7 @@
 import { describe, Try } from 'riteway';
 
 import autodux, { id, assign } from './core';
+import { SLICE_VALUE_ERROR } from './errors';
 
 const createCounterDux = (initial = 0) =>
   autodux({
@@ -353,12 +354,12 @@ describe('autodux()', async assert => {
     given: "'autodux' is called without an argument",
     should: 'throw an error',
     actual: Try(autodux).toString(),
-    expected: new Error("Proper value of 'slice' is required!").toString()
+    expected: new Error(SLICE_VALUE_ERROR).toString()
   });
 });
 
 describe("autodux({ …, slice: undefined | null | '' })", async assert => {
-  const error = new Error("Proper value of 'slice' is required!").toString();
+  const error = new Error(SLICE_VALUE_ERROR).toString();
 
   assert({
     given: "'autodux' is called with improper 'slice' value",

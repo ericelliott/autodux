@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/ericelliott/autodux#readme",
   "devDependencies": {
-    "coveralls": "3.0.2",
+    "coveralls": "3.0.3",
     "eslint": "5.14.1",
     "eslint-config-prettier": "4.0.0",
     "eslint-plugin-prettier": "3.0.1",

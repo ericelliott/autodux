@@ -6,7 +6,7 @@
   "module": "src/core.js",
   "scripts": {
     "lint": "eslint . && echo 'Lint finished.'",
-    "test": "node -r @babel/register -r @babel/polyfill ./node_modules/.bin/riteway src/test.js | tap-nirvana",
+    "test": "node -r esm ./node_modules/.bin/riteway src/test.js | tap-nirvana",
     "test-coverage": "nyc npm test",
     "test-coverage-ci": "nyc --reporter=text-lcov npm test",
     "show-coverage-ci": "nyc report --reporter=text-lcov | coveralls",
@@ -32,10 +32,6 @@
   },
   "homepage": "https://github.com/ericelliott/autodux#readme",
   "devDependencies": {
-    "@babel/core": "7.3.3",
-    "@babel/polyfill": "7.2.5",
-    "@babel/preset-env": "7.3.1",
-    "@babel/register": "7.0.0",
     "coveralls": "3.0.3",
     "eslint": "5.14.1",
     "eslint-config-prettier": "4.0.0",

@@ -7,7 +7,7 @@ import {
   isSliceValid,
   isPrimitive,
   isFunction,
-  selectFunction,
+  selectIfFunction,
   getSelectorName,
   getActionCreatorName,
   getType
@@ -136,7 +136,7 @@ export default function autodux(options = {}) {
       get(`${subType}.reducer`, actions),
       actions[subType],
       get(`${subType}.reducer`, defaultActions)
-    ].reduceRight((f, v) => selectFunction(v) || f);
+    ].reduceRight((f, v) => selectIfFunction(v) || f);
 
     return namespace === slice && (actions[subType] || defaultActions[subType])
       ? actionReducer

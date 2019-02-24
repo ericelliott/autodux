@@ -6,7 +6,7 @@ const selectIf = predicate => x => predicate(x) && x;
 
 export const isFunction = f => typeof f === 'function';
 
-export const selectFunction = selectIf(isFunction);
+export const selectIfFunction = selectIf(isFunction);
 
 const isNumber = n => typeof n === 'number';
 

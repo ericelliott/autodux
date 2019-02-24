@@ -1,4 +1,4 @@
-import capitalize from 'lodash/upperFirst';
+import * as R from 'ramda';
 
 export const id = x => x;
 
@@ -12,22 +12,23 @@ const isNumber = n => typeof n === 'number';
 
 const isBoolean = b => typeof b === 'boolean';
 
-const isUndefined = v => typeof v === 'undefined';
-
-const isNull = v => v === null;
-
 const isString = s => typeof s === 'string';
 
 export const isPrimitive = v =>
-  [isString, isNumber, isBoolean, isUndefined, isNull].some(f => f(v));
+  [isString, isNumber, isBoolean, R.isNil].some(f => f(v));
 
-const isEmptyString = s => s === '';
+export const isSliceValid = slice => isString(slice) && !R.isEmpty(slice);
 
-export const isSliceValid = slice => isString(slice) && !isEmptyString(slice);
+const capitalizeFirstWord = R.o(R.join(''), R.adjust(0, R.toUpper));
 
-export const getSelectorName = key => `get${capitalize(key)}`;
+const getName = R.compose(
+  capitalizeFirstWord,
+  R.ifElse(isString, R.identity, R.toString)
+);
 
-export const getActionCreatorName = key => `set${capitalize(key)}`;
+export const getSelectorName = key => `get${getName(key)}`;
+
+export const getActionCreatorName = key => `set${getName(key)}`;
 
 export const getType = (slice, actionCreatorName) =>
   `${slice}/${actionCreatorName}`;

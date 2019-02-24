@@ -54,6 +54,6 @@
   },
   "dependencies": {
     "esm": "3.2.14",
-    "lodash.curry": "4.1.1"
+    "ramda": "0.26.1"
   }
 }

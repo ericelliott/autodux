@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-global-assign
-require = require('esm')(module);
+export { default, assign } from './core';
 
-module.exports = require('./core.js');
+export { id } from './helpers';

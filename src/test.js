@@ -1,9 +1,7 @@
-const { describe, Try } = require('riteway');
+import { describe, Try } from 'riteway';
 
-const { SLICE_VALUE_ERROR } = require('./errors');
-const autodux = require('./');
-
-const { id, assign } = autodux;
+import autodux, { id, assign } from './core';
+import { SLICE_VALUE_ERROR } from './errors';
 
 const createCounterDux = (initial = 0) =>
   autodux({

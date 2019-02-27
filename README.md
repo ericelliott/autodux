@@ -6,7 +6,7 @@ Brought to you by [EricElliottJS.com](https://EricElliottJS.com) and [DevAnywher
 
 ## Install
 
-```
+```shell
 npm install --save autodux
 ```
 
@@ -47,8 +47,7 @@ That creates a full set of action creators, selectors, reducers, and action type
 
 Everything's on autopilot -- but you can override everything when you need to.
 
-
-## Why?
+## Why
 
 Redux is great, but you have to make a lot of boilerplate:
 
@@ -157,7 +156,6 @@ console.log(getValue({ counter: state })); // 2
 console.log(increment.type); // 'counter/increment'
 ```
 
-
 ## API Differences
 
 Action creators, reducers and selectors have simplified APIs.
@@ -178,7 +176,6 @@ An action is an action creator/reducer pair. Usually, these line up in neat 1:1 
 Like action creators and reducers, selectors are automatically created for each key in your initial state. `get{key}` will exist for each key in your `initial` state., and `get{slice}` will exist for the entire reducer state.
 
 For simple reducers, all the action creators, reducers, and selectors can be created for you automatically. All you have to do is specify the initial state shape and export the bindings.
-
 
 ### Action Creators
 
@@ -297,7 +294,6 @@ Autodux infers action types for you automatically using the slice and the action
 
 Because the switching is handled automatically, your reducers don't need to worry about the action type. Instead, they're passed the payload directly.
 
-
 ### Selectors
 
 > Note: Selectors are optional. By default, every key in your initial state will have its own selector, prepended with `get` and camelCased. For example, if you have a key called `userName`, a `getUserName` selector will be created automatically.
@@ -363,7 +359,7 @@ test('counter.rootState', assert => {
 
 ## Extras
 
-### assign = (key: String) => reducer: Function
+### `assign = (key: String) => reducer: Function`
 
 Often, we want our reducers to simply set a key in the state to the payload value. `assign()` makes that easy. e.g.:
 
@@ -414,7 +410,7 @@ const {
 });
 ```
 
-### id = x => x
+### `id = x => x`
 
 Useful for selectors that simply return the slice state:
 

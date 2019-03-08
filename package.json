@@ -53,7 +53,7 @@
     "watch": "1.0.2"
   },
   "dependencies": {
-    "esm": "3.2.7",
+    "esm": "3.2.13",
     "lodash.curry": "4.1.1"
   }
 }

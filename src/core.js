@@ -1,23 +1,19 @@
 import get from 'lodash/fp/get';
-import capitalize from 'lodash/upperFirst';
 
 import { SLICE_VALUE_ERROR } from './errors';
 
-export const id = x => x;
-const selectIf = predicate => x => predicate(x) && x;
-const isFunction = f => typeof f === 'function';
-const isString = s => typeof s === 'string';
-const isNumber = n => typeof n === 'number';
-const isBoolean = b => typeof b === 'boolean';
-const isUndefined = v => typeof v === 'undefined';
-const isNull = v => v === null;
-const isPrimitive = v =>
-  [isString, isNumber, isBoolean, isUndefined, isNull].some(f => f(v));
-const isEmptyString = s => s === '';
-const selectFunction = selectIf(isFunction);
+import {
+  id,
+  isSliceValid,
+  isPrimitive,
+  isFunction,
+  selectIfFunction,
+  getSelectorName,
+  getActionCreatorName,
+  getType
+} from './helpers';
 
 // # Selector creation:
-const toGetter = s => `get${capitalize(s)}`;
 const sliceSelector = (slice, fn) => state => fn(state[slice], state);
 
 const createInitSelectors = (slice, initial) =>
@@ -25,12 +21,12 @@ const createInitSelectors = (slice, initial) =>
     (obj, selector) =>
       slice
         ? Object.assign(obj, {
-            [toGetter(selector)]: sliceSelector(slice, state =>
+            [getSelectorName(selector)]: sliceSelector(slice, state =>
               get(selector, state)
             )
           })
         : Object.assign(obj, {
-            [toGetter(selector)]: state => get(selector, state)
+            [getSelectorName(selector)]: state => get(selector, state)
           }),
     {}
   );
@@ -47,15 +43,13 @@ const createSliceSelectors = (slice, selectors) =>
       {}
     ),
     {
-      [toGetter(slice)]: sliceSelector(slice, id)
+      [getSelectorName(slice)]: sliceSelector(slice, id)
     }
   );
 // /selector creation
 
 // # Action creation
-const getActionName = key => `set${capitalize(key)}`;
-
-const createAction = (slice, action, key, type = `${slice}/${action}`) => ({
+const createAction = (slice, action, key, type = getType(slice, action)) => ({
   create: Object.assign(payload => payload, { type }),
 
   reducer: (state, payload) =>
@@ -66,7 +60,7 @@ const createAction = (slice, action, key, type = `${slice}/${action}`) => ({
 
 const getInitialActions = (slice, initial) =>
   Object.keys(initial).reduce((o, key) => {
-    const action = getActionName(key);
+    const action = getActionCreatorName(key);
     return Object.assign(o, {
       [action]: createAction(slice, action, key)
     });
@@ -74,7 +68,7 @@ const getInitialActions = (slice, initial) =>
 
 const addDefaultActions = (slice, initial, actions) => {
   const initialActions = getInitialActions(slice, initial);
-  const action = getActionName(slice);
+  const action = getActionCreatorName(slice);
 
   return Object.assign(
     {},
@@ -92,20 +86,17 @@ const createMappedActions = (slice, actions) =>
       Object.assign({}, obj, {
         [action]: Object.assign(
           (...args) => ({
-            type: `${slice}/${action}`,
-            payload:
-              typeof actions[action].create === 'function'
-                ? actions[action].create(...args)
-                : args[0]
+            type: getType(slice, action),
+            payload: isFunction(actions[action].create)
+              ? actions[action].create(...args)
+              : args[0]
           }),
-          { type: `${slice}/${action}` }
+          { type: getType(slice, action) }
         )
       }),
     {}
   );
 // /action creation
-
-const isSliceValid = slice => isString(slice) && !isEmptyString(slice);
 
 const checkOptions = ({ slice }) => {
   if (!isSliceValid(slice)) {
@@ -113,7 +104,7 @@ const checkOptions = ({ slice }) => {
   }
 };
 
-const autodux = (options = {}) => {
+export default function autodux(options = {}) {
   checkOptions(options);
 
   const { initial = '', actions = {}, selectors = {}, slice } = options;
@@ -132,7 +123,7 @@ const autodux = (options = {}) => {
   const reducer = (state = initial, { type, payload } = {}) => {
     const [namespace, subType] = type
       ? type.split('/')
-      : 'unknown/unknown'.split('/');
+      : getType('unknown', 'unknown').split('/');
 
     const defaultActions = addDefaultActions(slice, initial, {});
 
@@ -145,7 +136,7 @@ const autodux = (options = {}) => {
       get(`${subType}.reducer`, actions),
       actions[subType],
       get(`${subType}.reducer`, defaultActions)
-    ].reduceRight((f, v) => selectFunction(v) || f);
+    ].reduceRight((f, v) => selectIfFunction(v) || f);
 
     return namespace === slice && (actions[subType] || defaultActions[subType])
       ? actionReducer
@@ -161,9 +152,7 @@ const autodux = (options = {}) => {
     selectors: allSelectors,
     actions: allActions
   };
-};
-
-export default autodux;
+}
 
 export const assign = key => (state, payload) =>
   Object.assign({}, state, {

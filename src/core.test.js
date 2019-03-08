@@ -1,6 +1,7 @@
 import { describe, Try } from 'riteway';
 
-import autodux, { id, assign } from './core';
+import autodux, { assign } from './core';
+import { id } from './helpers';
 import { SLICE_VALUE_ERROR } from './errors';
 
 const createCounterDux = (initial = 0) =>
@@ -272,6 +273,40 @@ describe('autodux({ … }).reducer', async assert => {
   }
 });
 
+describe('autodux({ …, actions: { …: assign(key) } }).reducer', async assert => {
+  const {
+    actions: { setUserName, setAvatar },
+    reducer
+  } = autodux({
+    slice: 'user',
+    initial: {
+      userName: 'Anonymous',
+      avatar: 'anonymous.png'
+    },
+    actions: {
+      setUserName: assign('userName'),
+      setAvatar: assign('avatar')
+    }
+  });
+
+  const userName = 'Foo';
+  const avatar = 'foo.png';
+
+  assert({
+    given: "'autodux' is called with 'assign' within 'actions'",
+    should:
+      "return a reducer that produces state with 'key' that contains action payload value",
+    actual: [setUserName(userName), setAvatar(avatar)].reduce(
+      reducer,
+      undefined
+    ),
+    expected: {
+      userName,
+      avatar
+    }
+  });
+});
+
 describe('autodux({ … }).selectors', async assert => {
   {
     const rootState = {
@@ -370,39 +405,5 @@ describe("autodux({ …, slice: undefined | null | '' })", async assert => {
       Try(autodux, { slice: '' }).toString()
     ],
     expected: [error, error, error]
-  });
-});
-
-describe('assign(key)', async assert => {
-  const {
-    actions: { setUserName, setAvatar },
-    reducer
-  } = autodux({
-    slice: 'user',
-    initial: {
-      userName: 'Anonymous',
-      avatar: 'anonymous.png'
-    },
-    actions: {
-      setUserName: assign('userName'),
-      setAvatar: assign('avatar')
-    }
-  });
-
-  const userName = 'Foo';
-  const avatar = 'foo.png';
-
-  assert({
-    given: 'a key',
-    should:
-      'return a reducer that sets the key in the state to the action payload value',
-    actual: [setUserName(userName), setAvatar(avatar)].reduce(
-      reducer,
-      undefined
-    ),
-    expected: {
-      userName,
-      avatar
-    }
   });
 });

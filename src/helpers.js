@@ -1,4 +1,15 @@
-import * as R from 'ramda';
+import {
+  isNil,
+  isEmpty,
+  o,
+  join,
+  adjust,
+  toUpper,
+  compose,
+  ifElse,
+  identity,
+  toString
+} from 'ramda';
 
 export const id = x => x;
 
@@ -15,15 +26,15 @@ const isBoolean = b => typeof b === 'boolean';
 const isString = s => typeof s === 'string';
 
 export const isPrimitive = v =>
-  [isString, isNumber, isBoolean, R.isNil].some(f => f(v));
+  [isString, isNumber, isBoolean, isNil].some(f => f(v));
 
-export const isSliceValid = slice => isString(slice) && !R.isEmpty(slice);
+export const isSliceValid = slice => isString(slice) && !isEmpty(slice);
 
-const capitalizeFirstWord = R.o(R.join(''), R.adjust(0, R.toUpper));
+const capitalizeFirstWord = o(join(''), adjust(0, toUpper));
 
-const getName = R.compose(
+const getName = compose(
   capitalizeFirstWord,
-  R.ifElse(isString, R.identity, R.toString)
+  ifElse(isString, identity, toString)
 );
 
 export const getSelectorName = key => `get${getName(key)}`;

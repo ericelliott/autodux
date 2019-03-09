@@ -1,4 +1,4 @@
-import * as R from 'ramda';
+import { path, prop } from 'ramda';
 
 import { SLICE_VALUE_ERROR } from './errors';
 import {
@@ -21,11 +21,11 @@ const createDefaultSelectors = (slice, initial) =>
       slice
         ? Object.assign(obj, {
             [getSelectorName(key)]: sliceSelector(slice, state =>
-              R.prop(key, state)
+              prop(key, state)
             )
           })
         : Object.assign(obj, {
-            [getSelectorName(key)]: state => R.prop(key, state)
+            [getSelectorName(key)]: state => prop(key, state)
           }),
     {}
   );
@@ -131,9 +131,9 @@ export default function autodux(options = {}) {
     // or an object, so we only select the value
     // if it's a function:
     const actionReducer = [
-      R.path([subType, 'reducer'], actions),
+      path([subType, 'reducer'], actions),
       actions[subType],
-      R.path([subType, 'reducer'], defaultActions)
+      path([subType, 'reducer'], defaultActions)
     ].reduceRight((f, v) => selectIfFunction(v) || f);
 
     return namespace === slice && (actions[subType] || defaultActions[subType])

@@ -1,7 +1,6 @@
-import get from 'lodash/fp/get';
+import { path, prop } from 'ramda';
 
 import { SLICE_VALUE_ERROR } from './errors';
-
 import {
   id,
   isSliceValid,
@@ -16,17 +15,17 @@ import {
 // # Selector creation:
 const sliceSelector = (slice, fn) => state => fn(state[slice], state);
 
-const createInitSelectors = (slice, initial) =>
+const createDefaultSelectors = (slice, initial) =>
   Object.keys(initial).reduce(
-    (obj, selector) =>
+    (obj, key) =>
       slice
         ? Object.assign(obj, {
-            [getSelectorName(selector)]: sliceSelector(slice, state =>
-              get(selector, state)
+            [getSelectorName(key)]: sliceSelector(slice, state =>
+              prop(key, state)
             )
           })
         : Object.assign(obj, {
-            [getSelectorName(selector)]: state => get(selector, state)
+            [getSelectorName(key)]: state => prop(key, state)
           }),
     {}
   );
@@ -34,12 +33,12 @@ const createInitSelectors = (slice, initial) =>
 const createSliceSelectors = (slice, selectors) =>
   Object.assign(
     Object.keys(selectors).reduce(
-      (obj, selector) =>
+      (obj, key) =>
         slice
           ? Object.assign(obj, {
-              [selector]: sliceSelector(slice, selectors[selector])
+              [key]: sliceSelector(slice, selectors[key])
             })
-          : Object.assign(obj, { [selector]: selectors[selector] }),
+          : Object.assign(obj, { [key]: selectors[key] }),
       {}
     ),
     {
@@ -108,10 +107,9 @@ export default function autodux(options = {}) {
   checkOptions(options);
 
   const { initial = '', actions = {}, selectors = {}, slice } = options;
-
   const allSelectors = Object.assign(
     {},
-    createInitSelectors(slice, initial),
+    createDefaultSelectors(slice, initial),
     createSliceSelectors(slice, selectors)
   );
 
@@ -133,9 +131,9 @@ export default function autodux(options = {}) {
     // or an object, so we only select the value
     // if it's a function:
     const actionReducer = [
-      get(`${subType}.reducer`, actions),
+      path([subType, 'reducer'], actions),
       actions[subType],
-      get(`${subType}.reducer`, defaultActions)
+      path([subType, 'reducer'], defaultActions)
     ].reduceRight((f, v) => selectIfFunction(v) || f);
 
     return namespace === slice && (actions[subType] || defaultActions[subType])

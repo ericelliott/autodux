@@ -1,5 +1,7 @@
 # Autodux
 
+[![Coverage Status](https://coveralls.io/repos/github/ericelliott/autodux/badge.svg?branch=master)](https://coveralls.io/github/ericelliott/autodux?branch=master)
+
 Redux on autopilot.
 
 Brought to you by [EricElliottJS.com](https://EricElliottJS.com) and [DevAnywhere.io](https://devanywhere.io).

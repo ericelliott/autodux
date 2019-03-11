@@ -12,6 +12,9 @@ import {
   getType
 } from './helpers';
 
+/**
+ * Create action creator for given slice (with optional payload mapper).
+ */
 const createActionCreator = (slice, name, mapPayload) => {
   const type = getType(slice, name);
   return Object.assign(
@@ -23,34 +26,37 @@ const createActionCreator = (slice, name, mapPayload) => {
   );
 };
 
+/**
+ * Create reducer for given key from initial state.
+ */
 const createReducer = key => (state, payload) =>
   !key && isPrimitive(payload)
     ? payload
     : Object.assign({}, state, key ? { [key]: payload } : payload);
 
+/**
+ * Create selector for given slice.
+ */
 const createSelector = (slice, fn) => state => fn(state[slice], state);
 
 /**
  * Create default action creators, reducers and selectors.
- * @param {string} slice - Slice name
- * @param {object} initial - Initial state object
- * @returns {[object, object, object]} Tuple containing action creator, reducer and selector.
  */
 const createDefaults = (slice, initial) => {
   const sliceActionCreatorName = getActionCreatorName(slice);
 
   return Object.keys(initial).reduce(
-    (resultTuple, key) => {
+    ([actionCreators, reducers, selectors], key) => {
       const actionCreatorName = getActionCreatorName(key);
 
       return [
-        Object.assign(resultTuple[0], {
+        Object.assign(actionCreators, {
           [actionCreatorName]: createActionCreator(slice, actionCreatorName)
         }),
-        Object.assign(resultTuple[1], {
+        Object.assign(reducers, {
           [actionCreatorName]: createReducer(key)
         }),
-        Object.assign(resultTuple[2], {
+        Object.assign(selectors, {
           [getSelectorName(key)]: createSelector(
             slice,
             state => prop(key, state)
@@ -78,6 +84,9 @@ const createDefaults = (slice, initial) => {
   );
 };
 
+/**
+ * Produce action creators from user-defined 'actions' object.
+ */
 const createActionCreators = (slice, actions) =>
   Object.keys(actions).reduce(
     (obj, action) =>
@@ -87,6 +96,9 @@ const createActionCreators = (slice, actions) =>
     {}
   );
 
+/**
+ * Produce selectors from user-defined 'selectors' object.
+ */
 const createSelectors = (slice, selectors) =>
   Object.keys(selectors).reduce(
     (obj, key) =>
@@ -99,6 +111,9 @@ const createSelectors = (slice, selectors) =>
     {}
   );
 
+/**
+ * Validate options supplied to 'autodux'.
+ */
 const checkOptions = ({ slice }) => {
   if (!isSliceValid(slice)) {
     throw new Error(SLICE_VALUE_ERROR);
@@ -128,16 +143,16 @@ export default function autodux(options = {}) {
     createActionCreators(slice, actions)
   );
 
-  const rootReducer = (state = initial, { type, payload } = {}) => {
-    const [namespace, subType] = type
-      ? type.split('/')
-      : getType('unknown', 'unknown').split('/');
+  const rootReducer = (
+    state = initial,
+    { type = getType('unknown', 'unknown'), payload } = {}
+  ) => {
+    const [namespace, subType] = type.split('/');
 
     // Look for reducer with top-to-bottom precedence.
     // Fall back to default actions, then undefined.
-    // The actions[subType] key can be a function
-    // or an object, so we only select the value
-    // if it's a function:
+    // 'actions[subType]' key can be a function or an object,
+    // so the value is selected only if it's a function:
     const reducer = [
       path([subType, 'reducer'], actions),
       actions[subType],
@@ -160,6 +175,9 @@ export default function autodux(options = {}) {
   };
 }
 
+/**
+ * Create reducer that assigns payload to the given key.
+ */
 export const assign = key => (state, payload) =>
   Object.assign({}, state, {
     [key]: payload

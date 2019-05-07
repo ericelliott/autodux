@@ -2,8 +2,8 @@
   "name": "autodux",
   "version": "5.0.0",
   "description": "Automate the Redux boilerplate.",
-  "main": "index.js",
-  "module": "src/index.js",
+  "main": "dist/index.js",
+  "module": "dist/index-esm.js",
   "scripts": {
     "lint": "npm run -s lint-js && npm run -s lint-md && echo 'Lint finished.'",
     "lint-js": "eslint .",

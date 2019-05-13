@@ -43,7 +43,7 @@
     "lint-staged": "8.1.6",
     "markdownlint-cli": "0.16.0",
     "nyc": "14.1.1",
-    "prettier": "1.17.0",
+    "prettier": "1.17.1",
     "riteway": "6.0.3",
     "tap-nirvana": "1.1.0",
     "textlint": "11.2.5",

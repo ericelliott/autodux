@@ -235,7 +235,7 @@ Since that's the default behavior, you can omit that one entirely.
 You don't need to create action creators unless you need to map the inputs to a different payload output. For example, if you need to translate between an auth provider user and your own application user objects, you could use an action creator like this:
 
 ```js
-({ userId, displayName }) => ({ uid, userName })
+({ userId, displayName }) => ({ uid: userId, userName: displayName })
 ```
 
 Here's how you'd implement our multiply action if you want to use a named parameter for the multiplication factor:

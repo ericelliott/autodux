@@ -6,7 +6,7 @@
   "module": "src/index.js",
   "scripts": {
     "lint": "npm run -s lint-js && npm run -s lint-md && echo 'Lint finished.'",
-    "lint-js": "eslint .",
+    "lint-js": "eslint . --fix",
     "lint-md": "markdownlint *.md && textlint *.md",
     "test": "node -r esm node_modules/.bin/riteway src/*.test.js | tap-nirvana",
     "test-coverage": "nyc npm test",
@@ -14,7 +14,7 @@
     "show-coverage-ci": "nyc report --reporter=text-lcov | coveralls",
     "show-coverage-text": "nyc report --reporter=text || echo \"Run 'npm run test-coverage' first.\"",
     "show-coverage-html": "open coverage/index.html || echo \"Run 'npm run test-coverage' first.\"",
-    "debug": "echo 'Open debugger in Chrome: \"chrome://inspect\".' && node --inspect-brk src/test.js",
+    "debug": "echo 'Open debugger in Chrome: \"chrome://inspect\".' && node -r esm --inspect-brk node_modules/.bin/riteway src/*.test.js",
     "watch": "watch 'clear && npm -s test' src",
     "update": "updtr"
   },
@@ -39,8 +39,8 @@
     "eslint": "6.1.0",
     "eslint-config-prettier": "6.0.0",
     "eslint-plugin-prettier": "3.1.0",
-    "husky": "2.7.0",
-    "lint-staged": "8.2.1",
+    "husky": "3.0.1",
+    "lint-staged": "9.2.0",
     "markdownlint-cli": "0.17.0",
     "nyc": "14.1.1",
     "prettier": "1.18.2",

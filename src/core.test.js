@@ -152,6 +152,37 @@ describe('autodux({ … }).actions', async assert => {
   }
 
   {
+    const {
+      actions: { setUser }
+    } = autodux({
+      slice: 'slice',
+      actions: {
+        setUser: {
+          create: ({ userId, displayName }) => ({
+            uid: userId,
+            userName: displayName
+          })
+        }
+      }
+    });
+    const userId = '123';
+    const displayName = 'Foo';
+
+    assert({
+      given: 'a custom action creator',
+      should: 'produce custom payload output',
+      actual: setUser({ userId, displayName }),
+      expected: {
+        type: setUser.type,
+        payload: {
+          uid: userId,
+          userName: displayName
+        }
+      }
+    });
+  }
+
+  {
     const { actions, reducer, initial } = createCounterDux(128);
 
     assert({

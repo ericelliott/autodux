@@ -1,6 +1,6 @@
 {
   "name": "autodux",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Automate the Redux boilerplate.",
   "main": "index.js",
   "module": "src/index.js",

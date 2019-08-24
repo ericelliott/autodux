@@ -36,7 +36,7 @@
   "devDependencies": {
     "@textlint-rule/textlint-rule-no-invalid-control-character": "1.2.0",
     "coveralls": "3.0.6",
-    "eslint": "6.2.1",
+    "eslint": "6.2.2",
     "eslint-config-prettier": "6.1.0",
     "eslint-plugin-prettier": "3.1.0",
     "husky": "3.0.4",

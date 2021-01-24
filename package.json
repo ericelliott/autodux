@@ -48,7 +48,7 @@
     "tap-nirvana": "1.1.0",
     "textlint": "11.7.6",
     "textlint-rule-common-misspellings": "1.0.1",
-    "textlint-rule-terminology": "1.1.30",
+    "textlint-rule-terminology": "2.1.5",
     "updtr": "3.1.0",
     "watch": "1.0.2"
   },

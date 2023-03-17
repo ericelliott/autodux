@@ -41,7 +41,7 @@
     "eslint-plugin-prettier": "3.1.4",
     "husky": "3.1.0",
     "lint-staged": "9.5.0",
-    "markdownlint-cli": "0.23.2",
+    "markdownlint-cli": "0.31.0",
     "nyc": "14.1.1",
     "prettier": "1.19.1",
     "riteway": "6.2.0",

@@ -49,7 +49,7 @@
     "textlint": "11.7.6",
     "textlint-rule-common-misspellings": "1.0.1",
     "textlint-rule-terminology": "1.1.30",
-    "updtr": "3.1.0",
+    "updtr": "4.0.0",
     "watch": "1.0.2"
   },
   "dependencies": {
